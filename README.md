@@ -284,9 +284,31 @@ struct table_item {
 - scan语句中的表达式必须为左值
 
 数组索引的语义值在每次分析到新维度时更新
+
 参数列表的语义值在每次分析到新参数时更新
 
+## 使用
 
+1. 生成可执行文件
+```
+git clone https://github.com/StoneSix16/L24Compiler.git
+cd ./L24Compiler/
+make
+```
+
+2. 使用命令行执行程序
+```
+L24Parser.exe <source code file>
+```
+输入``e``，执行整个测试程序
+输入``s``，按步执行一条指令
+输入``1~4``，打印当前的堆栈信息
+输入``q``，退出L24Parser
+
+3. 使用GUI执行程序（TODO）
+```
+python GUI.py
+```
 
 
 
