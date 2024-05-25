@@ -1,0 +1,17 @@
+main{
+    int *x[5];
+    int a[10]; int i;
+    for(i = 0; i < 10; ++i){
+        a[i] = i;
+        print(a[i]);
+    }
+    print("\n");
+    for(i = 0; i < 5; ++i){
+        x[i] = &a[i+3];
+        *x[i] = 10 - i;
+    }
+    for(i = 0; i < 10; ++i){
+        print(a[i]);
+    }
+
+}

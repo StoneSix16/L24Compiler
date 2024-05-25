@@ -1,0 +1,5 @@
+main{
+    int i; bool p;
+    scan(i, p);
+    print(i+3, !p);
+}

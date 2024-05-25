@@ -1,4 +1,7 @@
 makefile
 GUI.py
 l24_parser.exe
-*.txt
+fcode.txt
+flog.txt
+foutput.txt
+ftable.txt

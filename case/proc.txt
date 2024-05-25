@@ -1,0 +1,10 @@
+main{
+    int a; a = 0;
+    int ex; ex = 3;
+    string f(int a){
+        string s;
+        s = a+"H";
+        return s*ex;
+    };
+    print(f(1));
+}

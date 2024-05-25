@@ -1,0 +1,12 @@
+main{
+    string a;
+    a = "hhhh";
+    if(a+1 == "hhhh1")then{
+        if(a * 2 == "hhhhhhhh")then{
+            print(a*3);
+        }end;
+    }
+    else{
+        print(a);
+    }end;
+}
