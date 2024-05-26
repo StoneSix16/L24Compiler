@@ -25,12 +25,12 @@ bool push_flag; /* 是否在声明变量时申请栈空间 */
 // bool listswitch;   /* 显示虚拟机代码与否 */
 // bool tableswitch;  /* 显示符号表与否 */
 
-FILE* fin;      /* 输入源文件 */
+FILE* fsource;      /* 输入源文件 */
 FILE* flog = NULL;	  /* 编译日志输出 */
+FILE* finput = NULL;	  /* 程序执行输入 */
 FILE* foutput = NULL;	  /* 程序执行输出 */
 FILE* fcode = NULL;    /* 输出虚拟机代码 */
-FILE* ftable = NULL;    /* 输出虚拟机代码 */
-// FILE* foutput;  /* 输出出错示意（如有错） */
+FILE* finfo = NULL;     /* 堆栈信息 */
 
 int err;
 extern int last_char;
@@ -1436,33 +1436,40 @@ void init() {
 
 int main(int argc,char **argv) {
     const char* fname = argv[1];
+
+    if ((flog = fopen("flog.txt", "w")) == NULL){
+        printf("Can't open flog.txt file!\n");
+        exit(1);
+    }
+
+    if ((fcode = fopen("fcode.txt", "w")) == NULL){
+        printf("Can't open fcode.txt file!\n");
+        exit(1);
+    }
+    if ((fsource = fopen(fname, "r")) == NULL){
+		printf("Can't open the source file!\n");
+		exit(1);
+	}
+
     if(argc > 2 && strcmp(argv[2], "-g") == 0){
-        foutput = stdout;
+        if ((finput = fopen("finput.txt", "w")) == NULL){
+            printf("Can't open finput.txt file!\n");
+            exit(1);
+        }
     }
     else{
+        finput = stdin;
+        if ((finfo = fopen("finfo.txt", "w")) == NULL){
+            printf("Can't open finfo.txt file!\n");
+            exit(1);
+        }
         if ((foutput = fopen("foutput.txt", "w")) == NULL){
             printf("Can't open foutput.txt file!\n");
             exit(1);
         }
     }
-    if ((flog = fopen("flog.txt", "w")) == NULL){
-        printf("Can't open flog.txt file!\n");
-        exit(1);
-    }
-    if ((fcode = fopen("fcode.txt", "w")) == NULL){
-        printf("Can't open fcode.txt file!\n");
-        exit(1);
-    }
-    if ((ftable = fopen("ftable.txt", "w")) == NULL){
-        printf("Can't open ftable.txt file!\n");
-        exit(1);
-    }
-    
-    if ((fin = fopen(fname, "r")) == NULL){
-		printf("Can't open the input file!\n");
-		exit(1);
-	}
-    redirectInput(fin, foutput);	
+
+    redirectInput(fsource, foutput);	
 	init();
 
     fprintf(flog, "===compiling...===\n");
@@ -1479,25 +1486,69 @@ int main(int argc,char **argv) {
 	}
     fclose(flog);
     fclose(fcode);
-    fclose(ftable);
-    fclose(fin);
+    fclose(fsource);
 
     int cmd;
-    while(scanf("%c", &cmd) > 0){
-        if(cmd == 'q'){ break; }
-        else if(cmd == 'e'){
-            vm_execute(stdin, foutput);
-        }
-        else if(cmd == 's'){
-            if(vm_pc < vm_code_cnt) vm_step(stdin, foutput);
-            else continue;
-        }
-        else{
-            vm_print_storage(cmd, foutput);
+    if(argc > 2 && strcmp(argv[2], "-g") == 0){
+        int cmd_cnt = 0;
+        char cache_file[50];
+        
+        FILE* cache;
+        while(scanf("%c", &cmd) > 0){
+            if(cmd == 'q'){ break; }
+            else if(cmd == 'e'){
+                sprintf(cache_file, "./cache/%d.txt", cmd_cnt);
+                if((cache = fopen(cache_file, "w")) == NULL){
+                    printf("Can't open cache file!\n");
+                    exit(1);
+                }
+                vm_execute(finput, cache);
+                fclose(cache);
+            }
+            else if(cmd == 's'){
+                if(vm_pc < vm_code_cnt) {
+                    sprintf(cache_file, "./cache/%d.txt", cmd_cnt);
+                    if((cache = fopen(cache_file, "w")) == NULL){
+                        printf("Can't open cache file!\n");
+                        exit(1);
+                    }
+                    vm_step(finput, cache);
+                    fclose(cache);
+                }
+                else continue;
+            }
+            else if (cmd >= '0' && cmd <= '9'){
+                sprintf(cache_file, "./cache/%d.txt", cmd_cnt);
+                if((cache = fopen(cache_file, "w")) == NULL){
+                    printf("Can't open cache file!\n");
+                    exit(1);
+                }
+                vm_print_storage(cmd, cache);
+                fclose(cache);
+            }
+            else{}
+            cmd_cnt += 1;
         }
     }
+    else{
+        while(scanf("%c", &cmd) > 0){
+            if(cmd == 'q'){ break; }
+            else if(cmd == 'e'){
+                vm_execute(finput, foutput);
+            }
+            else if(cmd == 's'){
+                if(vm_pc < vm_code_cnt) vm_step(finput, foutput);
+                else continue;
+            }
+            else{
+                vm_print_storage(cmd, finfo);
+            }
+        }
+        fclose(foutput);
+        fclose(finfo);
+    }
 
-    if(foutput != stdout) fclose(foutput);
+
 	
     return 0;
 }

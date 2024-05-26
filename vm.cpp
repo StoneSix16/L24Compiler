@@ -158,7 +158,7 @@ void vm_print_storage(int cmd, FILE* foutput){
     else if(cmd == '3'){
         fprintf(foutput, "\nstr\n");
         for(int i = 0; i < vm_tail; i++){
-            fprintf(foutput, "%s\n", vm_heap[i]);
+            fprintf(foutput, "%s\n", vm_heap[i]->str_data);
         }
     }
 }

@@ -4,4 +4,7 @@ L24Parser.exe
 fcode.txt
 flog.txt
 foutput.txt
-ftable.txt
+finfo.txt
+finput.txt
+fsource.txt
+cache
