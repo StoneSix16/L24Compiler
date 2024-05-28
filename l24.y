@@ -118,7 +118,6 @@ program: MAINSYM
     }
     rec_cbuf_pc LBRACE stmt_list RBRACE
     {
-            
         vm_set_jmp(0, vm_code_cnt, false);
         vm_gen(ret, 0, 0);
         table_print(flog);
@@ -529,7 +528,7 @@ if_part_ifthen: IFSYM LPAREN condition RPAREN THENSYM
     LBRACE stmt_list RBRACE 
     {
         /* 还有一条jmp指令 */ 
-        vm_set_jmp($<number>7, vm_record(false) + 1);
+        vm_set_jmp($<number>6, vm_record(false) + 1);
     }
 if_part_else: ELSESYM LBRACE stmt_list RBRACE 
 
@@ -1492,8 +1491,16 @@ int main(int argc,char **argv) {
     if(argc > 2 && strcmp(argv[2], "-g") == 0){
         int cmd_cnt = 0;
         char cache_file[50];
-        
         FILE* cache;
+
+        sprintf(cache_file, "./cache/%d.txt", cmd_cnt);
+        if((cache = fopen(cache_file, "w")) == NULL){
+            printf("Can't open cache file!\n");
+            exit(1);
+        }
+        cmd_cnt+=1;
+        fclose(cache);
+        
         while(scanf("%c", &cmd) > 0){
             if(cmd == 'q'){ break; }
             else if(cmd == 'e'){

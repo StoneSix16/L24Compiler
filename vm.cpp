@@ -161,6 +161,14 @@ void vm_print_storage(int cmd, FILE* foutput){
             fprintf(foutput, "%s\n", vm_heap[i]->str_data);
         }
     }
+    else if(cmd == '4'){
+        fprintf(foutput, "\nregs\n");
+        fprintf(foutput, "pc:%d\n", vm_pc);
+        fprintf(foutput, "code_cnt:%d\n", vm_code_cnt);
+        fprintf(foutput, "base:%d\n", vm_base);
+        fprintf(foutput, "pstk:%d\n", p_stk);
+        
+    }
 }
 
 

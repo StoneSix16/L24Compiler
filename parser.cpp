@@ -653,19 +653,19 @@ static const yytype_int8 yytranslate[] =
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int16 yyrline[] =
 {
-       0,   112,   112,   111,   136,   139,   142,   143,   144,   145,
-     146,   147,   148,   149,   150,   150,   151,   151,   152,   152,
-     153,   153,   154,   154,   155,   155,   156,   163,   162,   180,
-     179,   198,   219,   233,   237,   244,   248,   253,   257,   261,
-     268,   273,   279,   314,   327,   339,   313,   352,   365,   380,
-     392,   408,   420,   432,   452,   472,   490,   501,   512,   514,
-     519,   513,   525,   524,   534,   539,   543,   538,   556,   557,
-     559,   559,   561,   565,   560,   580,   592,   601,   603,   606,
-     608,   611,   614,   619,   623,   639,   643,   659,   663,   679,
-     695,   710,   725,   740,   756,   760,   815,   836,   840,   883,
-     904,   926,   930,   947,   951,   966,   980,   998,  1016,  1020,
-    1038,  1058,  1062,  1098,  1126,  1130,  1155,  1229,  1228,  1258,
-    1257,  1284,  1303,  1308
+       0,   112,   112,   111,   135,   138,   141,   142,   143,   144,
+     145,   146,   147,   148,   149,   149,   150,   150,   151,   151,
+     152,   152,   153,   153,   154,   154,   155,   162,   161,   179,
+     178,   197,   218,   232,   236,   243,   247,   252,   256,   260,
+     267,   272,   278,   313,   326,   338,   312,   351,   364,   379,
+     391,   407,   419,   431,   451,   471,   489,   500,   511,   513,
+     518,   512,   524,   523,   533,   538,   542,   537,   555,   556,
+     558,   558,   560,   564,   559,   579,   591,   600,   602,   605,
+     607,   610,   613,   618,   622,   638,   642,   658,   662,   678,
+     694,   709,   724,   739,   755,   759,   814,   835,   839,   882,
+     903,   925,   929,   946,   950,   965,   979,   997,  1015,  1019,
+    1037,  1057,  1061,  1097,  1125,  1129,  1154,  1228,  1227,  1257,
+    1256,  1283,  1302,  1307
 };
 #endif
 
@@ -1697,7 +1697,6 @@ yyreduce:
   case 3: /* program: MAINSYM $@1 rec_cbuf_pc LBRACE stmt_list RBRACE  */
 #line 120 "l24.y"
     {
-            
         vm_set_jmp(0, vm_code_cnt, false);
         vm_gen(ret, 0, 0);
         table_print(flog);
@@ -1708,55 +1707,55 @@ yyreduce:
         /* 将code buffer中的一个block的内容输出到code中 */
         vm_output();
     }
-#line 1712 "parser.cpp"
+#line 1711 "parser.cpp"
     break;
 
   case 4: /* stmt_list: %empty  */
-#line 136 "l24.y"
+#line 135 "l24.y"
     {
 
     }
-#line 1720 "parser.cpp"
+#line 1719 "parser.cpp"
     break;
 
   case 14: /* $@2: %empty  */
-#line 150 "l24.y"
+#line 149 "l24.y"
                 {yyerror("expect a \";\"");}
-#line 1726 "parser.cpp"
+#line 1725 "parser.cpp"
     break;
 
   case 16: /* $@3: %empty  */
-#line 151 "l24.y"
+#line 150 "l24.y"
                 {yyerror("expect a \";\"");}
-#line 1732 "parser.cpp"
+#line 1731 "parser.cpp"
     break;
 
   case 18: /* $@4: %empty  */
-#line 152 "l24.y"
+#line 151 "l24.y"
               {yyerror("expect a \";\"");}
-#line 1738 "parser.cpp"
+#line 1737 "parser.cpp"
     break;
 
   case 20: /* $@5: %empty  */
-#line 153 "l24.y"
+#line 152 "l24.y"
                {yyerror("expect a \";\"");}
-#line 1744 "parser.cpp"
+#line 1743 "parser.cpp"
     break;
 
   case 22: /* $@6: %empty  */
-#line 154 "l24.y"
+#line 153 "l24.y"
                 {yyerror("expect a \";\"");}
-#line 1750 "parser.cpp"
+#line 1749 "parser.cpp"
     break;
 
   case 24: /* $@7: %empty  */
-#line 155 "l24.y"
+#line 154 "l24.y"
                  {yyerror("expect a \";\"");}
-#line 1756 "parser.cpp"
+#line 1755 "parser.cpp"
     break;
 
   case 27: /* $@8: %empty  */
-#line 163 "l24.y"
+#line 162 "l24.y"
     {
         int tbl_idx = tbl_idx_proc[cur_level - 1];
         /* 更新表项的size */
@@ -1767,21 +1766,21 @@ yyreduce:
         /* 更新表项的 pc起始位置 */
         table[tbl_idx].addr = vm_code_cnt - 1;
     }
-#line 1771 "parser.cpp"
+#line 1770 "parser.cpp"
     break;
 
   case 28: /* proc: LPAREN load_params param_list load_params RPAREN $@8 rec_cbuf_pc LBRACE stmt_list RBRACE  */
-#line 174 "l24.y"
+#line 173 "l24.y"
     {
         if(num_ret[cur_level] == 0){
             yyerror("missing return statement");
         }
     }
-#line 1781 "parser.cpp"
+#line 1780 "parser.cpp"
     break;
 
   case 29: /* $@9: %empty  */
-#line 180 "l24.y"
+#line 179 "l24.y"
     {
         int tbl_idx = tbl_idx_proc[cur_level - 1];
         /* 更新表项的size */
@@ -1792,22 +1791,22 @@ yyreduce:
         /* 更新表项的 pc起始位置 */
         table[tbl_idx].addr = vm_code_cnt;
     }
-#line 1796 "parser.cpp"
+#line 1795 "parser.cpp"
     break;
 
   case 30: /* proc: LPAREN RPAREN $@9 rec_cbuf_pc LBRACE stmt_list RBRACE  */
-#line 191 "l24.y"
+#line 190 "l24.y"
     {
         /* 填入返回值的类型 */
         if(num_ret[cur_level] == 0){
             yyerror("missing return statement");
         }
     }
-#line 1807 "parser.cpp"
+#line 1806 "parser.cpp"
     break;
 
   case 31: /* ret_stmt: RETSYM expr  */
-#line 199 "l24.y"
+#line 198 "l24.y"
     {
         if((yyvsp[0].expr_inf)){
             type_desp* type = (yyvsp[0].expr_inf)->type_info;
@@ -1826,11 +1825,11 @@ yyreduce:
             num_ret[cur_level] += 1;
         }
     }
-#line 1830 "parser.cpp"
+#line 1829 "parser.cpp"
     break;
 
   case 32: /* end_block: %empty  */
-#line 219 "l24.y"
+#line 218 "l24.y"
     {
         /* 存储当前函数体的起始位置 */
         cur_block_pc = vm_code_cnt;
@@ -1843,87 +1842,87 @@ yyreduce:
         /* 将code buffer中的一个block的内容输出到code中 */
         vm_output();
     }
-#line 1847 "parser.cpp"
+#line 1846 "parser.cpp"
     break;
 
   case 33: /* type_spec: type  */
-#line 234 "l24.y"
+#line 233 "l24.y"
     {
         (yyval.type_inf) = create_type_desp((yyvsp[0].type_name), -1, -1);
     }
-#line 1855 "parser.cpp"
+#line 1854 "parser.cpp"
     break;
 
   case 34: /* type_spec: type pointer  */
-#line 238 "l24.y"
+#line 237 "l24.y"
     {
         (yyval.type_inf) = create_type_desp(pointer, -1, (yyvsp[0].number));
         type_desp* member_type = create_type_desp((yyvsp[-1].type_name), -1, -1);
         (yyval.type_inf)->member_t = member_type;
     }
-#line 1865 "parser.cpp"
+#line 1864 "parser.cpp"
     break;
 
   case 35: /* pointer: TIMES  */
-#line 245 "l24.y"
+#line 244 "l24.y"
     {
         (yyval.number) = 1;
     }
-#line 1873 "parser.cpp"
+#line 1872 "parser.cpp"
     break;
 
   case 36: /* pointer: pointer TIMES  */
-#line 249 "l24.y"
+#line 248 "l24.y"
     {
         (yyval.number) = (yyvsp[-1].number) + 1;
     }
-#line 1881 "parser.cpp"
+#line 1880 "parser.cpp"
     break;
 
   case 37: /* type: STRSYM  */
-#line 254 "l24.y"
+#line 253 "l24.y"
     {
         (yyval.type_name) = (yyvsp[0].type_name);
     }
-#line 1889 "parser.cpp"
+#line 1888 "parser.cpp"
     break;
 
   case 38: /* type: INTSYM  */
-#line 258 "l24.y"
+#line 257 "l24.y"
     {
         (yyval.type_name) = (yyvsp[0].type_name);
     }
-#line 1897 "parser.cpp"
+#line 1896 "parser.cpp"
     break;
 
   case 39: /* type: BOOLSYM  */
-#line 262 "l24.y"
+#line 261 "l24.y"
     {
         (yyval.type_name) = (yyvsp[0].type_name);
     }
-#line 1905 "parser.cpp"
+#line 1904 "parser.cpp"
     break;
 
   case 40: /* declarator: ID  */
-#line 269 "l24.y"
+#line 268 "l24.y"
     {
         strcpy(tbl_id, (yyvsp[0].ident));
         (yyval.type_inf) = NULL;
     }
-#line 1914 "parser.cpp"
+#line 1913 "parser.cpp"
     break;
 
   case 41: /* declarator: ID arr_dim  */
-#line 274 "l24.y"
+#line 273 "l24.y"
     {
         strcpy(tbl_id, (yyvsp[-1].ident));
         (yyval.type_inf) = (yyvsp[0].type_inf);
     }
-#line 1923 "parser.cpp"
+#line 1922 "parser.cpp"
     break;
 
   case 42: /* decl_stmt: type_spec declarator  */
-#line 280 "l24.y"
+#line 279 "l24.y"
     {
         int tbl_idx = table_position(tbl_id, tbl_tail);
         type_desp* type_decl;
@@ -1957,11 +1956,11 @@ yyreduce:
             (yyval.type_name) = type_decl->t;
         }
     }
-#line 1961 "parser.cpp"
+#line 1960 "parser.cpp"
     break;
 
   case 43: /* $@10: %empty  */
-#line 314 "l24.y"
+#line 313 "l24.y"
     {
         if((yyvsp[0].type_inf) != NULL){
             /* 函数的返回值类型不应该是数组 */
@@ -1975,11 +1974,11 @@ yyreduce:
             tbl_idx_proc[cur_level] = tbl_tail;
         }
     }
-#line 1979 "parser.cpp"
+#line 1978 "parser.cpp"
     break;
 
   case 44: /* @11: %empty  */
-#line 327 "l24.y"
+#line 326 "l24.y"
     {
         /* 函数跳转入口 */
         vm_record();
@@ -1991,31 +1990,31 @@ yyreduce:
         /* 记录定义函数的返回值类型 */
         type_ret[cur_level] = (yyvsp[-2].type_inf);
     }
-#line 1995 "parser.cpp"
+#line 1994 "parser.cpp"
     break;
 
   case 45: /* $@12: %empty  */
-#line 339 "l24.y"
+#line 338 "l24.y"
     {
         /* 记录定义函数的返回值类型 */
         type_ret[cur_level] = NULL;
         num_ret[cur_level] = 0;
         cur_level --;
     }
-#line 2006 "parser.cpp"
+#line 2005 "parser.cpp"
     break;
 
   case 46: /* decl_stmt: type_spec declarator $@10 @11 proc end_block $@12  */
-#line 345 "l24.y"
+#line 344 "l24.y"
     {
         vm_set_jmp((yyvsp[-3].number), cur_block_pc, false);
         (yyval.type_name) = proc;
     }
-#line 2015 "parser.cpp"
+#line 2014 "parser.cpp"
     break;
 
   case 47: /* arr_dim: LBRACKET LIT RBRACKET  */
-#line 353 "l24.y"
+#line 352 "l24.y"
     {
 
         if ((yyvsp[-1].lit_inf)->t != lint){
@@ -2028,11 +2027,11 @@ yyreduce:
             (yyval.type_inf) = create_type_desp(array, (yyvsp[-1].lit_inf)->val, 1);
         }
     }
-#line 2032 "parser.cpp"
+#line 2031 "parser.cpp"
     break;
 
   case 48: /* arr_dim: arr_dim LBRACKET LIT RBRACKET  */
-#line 366 "l24.y"
+#line 365 "l24.y"
     {
         if((yyval.type_inf)->dim == MAX_ARR_DIM){
             yyerror("too many dimensions");
@@ -2046,11 +2045,11 @@ yyreduce:
             (yyval.type_inf)->dim += 1;
         }
     }
-#line 2050 "parser.cpp"
+#line 2049 "parser.cpp"
     break;
 
   case 49: /* arr_idx: LBRACKET expr RBRACKET  */
-#line 381 "l24.y"
+#line 380 "l24.y"
     {   
         if((yyvsp[-1].expr_inf)){
             bool flag1 = err_type((yyvsp[-1].expr_inf)->type_info, lint, true, "dimension is a non-integer");
@@ -2062,11 +2061,11 @@ yyreduce:
             (yyval.arr_idx_inf) = create_arr_idx_s(1, 0);
         }
     }
-#line 2066 "parser.cpp"
+#line 2065 "parser.cpp"
     break;
 
   case 50: /* arr_idx: arr_idx LBRACKET expr RBRACKET  */
-#line 393 "l24.y"
+#line 392 "l24.y"
     {
         if((yyvsp[-1].expr_inf)){
             bool flag1 = err_type((yyvsp[-1].expr_inf)->type_info, lint, true, "dimension is a non-integer");
@@ -2081,11 +2080,11 @@ yyreduce:
             (yyval.arr_idx_inf)->dim += 1;
         }
     }
-#line 2085 "parser.cpp"
+#line 2084 "parser.cpp"
     break;
 
   case 51: /* param_list: decl_stmt  */
-#line 409 "l24.y"
+#line 408 "l24.y"
     {
         type_desp* type = table[tbl_tail].type;
         if(err_type(type, proc, false)){
@@ -2097,11 +2096,11 @@ yyreduce:
             (yyval.arg_inf)->len += 1;
         }
     }
-#line 2101 "parser.cpp"
+#line 2100 "parser.cpp"
     break;
 
   case 52: /* param_list: param_list COMMA decl_stmt  */
-#line 421 "l24.y"
+#line 420 "l24.y"
     {
         type_desp* type = table[tbl_tail].type;
         if(err_type(type, proc, false)){
@@ -2112,11 +2111,11 @@ yyreduce:
             (yyval.arg_inf)->len += 1;
         }
     }
-#line 2116 "parser.cpp"
+#line 2115 "parser.cpp"
     break;
 
   case 53: /* arg_list: expr  */
-#line 433 "l24.y"
+#line 432 "l24.y"
     {
         if((yyvsp[0].expr_inf)){
             /* 函数参数只使用值传递，左值需要被转化成右值
@@ -2136,11 +2135,11 @@ yyreduce:
             (yyval.arg_inf) = NULL;
         }
     }
-#line 2140 "parser.cpp"
+#line 2139 "parser.cpp"
     break;
 
   case 54: /* arg_list: arg_list COMMA expr  */
-#line 453 "l24.y"
+#line 452 "l24.y"
     {
         if((yyvsp[-2].arg_inf) && (yyvsp[0].expr_inf)){
             (yyval.arg_inf) = (yyvsp[-2].arg_inf);
@@ -2157,11 +2156,11 @@ yyreduce:
             (yyval.arg_inf) = NULL;
         }
     }
-#line 2161 "parser.cpp"
+#line 2160 "parser.cpp"
     break;
 
   case 55: /* expr_stmt: expr BECOMES expr  */
-#line 473 "l24.y"
+#line 472 "l24.y"
     {
         if((yyvsp[-2].expr_inf) && (yyvsp[0].expr_inf)){
             /* 将栈顶元素赋值，要求左侧表达式为左值 */
@@ -2179,22 +2178,22 @@ yyreduce:
             }
         }
     }
-#line 2183 "parser.cpp"
+#line 2182 "parser.cpp"
     break;
 
   case 56: /* expr_stmt: expr  */
-#line 491 "l24.y"
+#line 490 "l24.y"
     {
         if((yyvsp[0].expr_inf)){
             /* 直接弹出栈顶元素 */
             vm_gen(pop, 0, 1);
         }
     }
-#line 2194 "parser.cpp"
+#line 2193 "parser.cpp"
     break;
 
   case 57: /* condition: expr  */
-#line 502 "l24.y"
+#line 501 "l24.y"
     {
         if((yyvsp[0].expr_inf)){
             (yyval.expr_inf) = (yyvsp[0].expr_inf);
@@ -2204,102 +2203,102 @@ yyreduce:
             (yyval.expr_inf) = NULL;
         }
     }
-#line 2208 "parser.cpp"
+#line 2207 "parser.cpp"
     break;
 
   case 59: /* @13: %empty  */
-#line 514 "l24.y"
+#line 513 "l24.y"
     {
         (yyval.number) = vm_record(false);
         vm_gen(jmp, 0, 0);
     }
-#line 2217 "parser.cpp"
+#line 2216 "parser.cpp"
     break;
 
   case 60: /* $@14: %empty  */
-#line 519 "l24.y"
+#line 518 "l24.y"
     {
         vm_set_jmp((yyvsp[-1].number), vm_record(false));
     }
-#line 2225 "parser.cpp"
+#line 2224 "parser.cpp"
     break;
 
   case 62: /* @15: %empty  */
-#line 525 "l24.y"
+#line 524 "l24.y"
     {
         (yyval.number) = vm_record(false);
         vm_gen(jpc, 0, 0);
     }
-#line 2234 "parser.cpp"
+#line 2233 "parser.cpp"
     break;
 
   case 63: /* if_part_ifthen: IFSYM LPAREN condition RPAREN THENSYM @15 LBRACE stmt_list RBRACE  */
-#line 530 "l24.y"
+#line 529 "l24.y"
     {
         /* 还有一条jmp指令 */ 
-        vm_set_jmp((yyvsp[-2].number), vm_record(false) + 1);
+        vm_set_jmp((yyvsp[-3].number), vm_record(false) + 1);
     }
-#line 2243 "parser.cpp"
+#line 2242 "parser.cpp"
     break;
 
   case 65: /* @16: %empty  */
-#line 539 "l24.y"
+#line 538 "l24.y"
     {
         (yyval.number) = vm_record(false);
     }
-#line 2251 "parser.cpp"
+#line 2250 "parser.cpp"
     break;
 
   case 66: /* @17: %empty  */
-#line 543 "l24.y"
+#line 542 "l24.y"
     {
         (yyval.number) = vm_record(false);
         vm_gen(jpc, 0, 0);
     }
-#line 2260 "parser.cpp"
+#line 2259 "parser.cpp"
     break;
 
   case 67: /* while_stmt: WHILESYM @16 LPAREN condition RPAREN @17 LBRACE stmt_list RBRACE  */
-#line 548 "l24.y"
+#line 547 "l24.y"
     {
         
         vm_gen(jmp, 0, 0);
         vm_set_jmp(vm_record(false)-1, (yyvsp[-7].number));
         vm_set_jmp((yyvsp[-3].number), vm_record(false));
     }
-#line 2271 "parser.cpp"
+#line 2270 "parser.cpp"
     break;
 
   case 72: /* @18: %empty  */
-#line 561 "l24.y"
+#line 560 "l24.y"
     {
         (yyval.number) = vm_record(false);
     }
-#line 2279 "parser.cpp"
+#line 2278 "parser.cpp"
     break;
 
   case 73: /* @19: %empty  */
-#line 565 "l24.y"
+#line 564 "l24.y"
     {
         (yyval.number) = vm_record(false);
         vm_gen(jpc, 0, 0);
     }
-#line 2288 "parser.cpp"
+#line 2287 "parser.cpp"
     break;
 
   case 74: /* for_stmt: FORSYM LPAREN for_substmt SEMICOLON @18 condition SEMICOLON @19 rec_cbuf_pc for_substmt RPAREN rec_cbuf_pc LBRACE stmt_list RBRACE  */
-#line 571 "l24.y"
+#line 570 "l24.y"
     {
         vm_swap_block();
         vm_gen(jmp, 0, 0);
         vm_set_jmp(vm_record(false)-1, (yyvsp[-10].number));
         vm_set_jmp((yyvsp[-7].number), vm_record(false));
     }
-#line 2299 "parser.cpp"
+#line 2298 "parser.cpp"
     break;
 
   case 75: /* scan_item: expr  */
-#line 581 "l24.y"
+#line 580 "l24.y"
     {
         if((yyvsp[0].expr_inf)){
             /* scan list 的项都应为左值 */
@@ -2311,11 +2310,11 @@ yyreduce:
             }
         }
     }
-#line 2315 "parser.cpp"
+#line 2314 "parser.cpp"
     break;
 
   case 76: /* print_item: expr  */
-#line 593 "l24.y"
+#line 592 "l24.y"
     {
         if((yyvsp[0].expr_inf)){
             if(err_type((yyvsp[0].expr_inf)->type_info, array, false, "unable to wrt array")){
@@ -2323,55 +2322,55 @@ yyreduce:
             }
         }
     }
-#line 2327 "parser.cpp"
+#line 2326 "parser.cpp"
     break;
 
   case 77: /* scan_list: scan_item  */
-#line 602 "l24.y"
+#line 601 "l24.y"
     {}
-#line 2333 "parser.cpp"
+#line 2332 "parser.cpp"
     break;
 
   case 78: /* scan_list: scan_list COMMA scan_item  */
-#line 604 "l24.y"
+#line 603 "l24.y"
     {}
-#line 2339 "parser.cpp"
+#line 2338 "parser.cpp"
     break;
 
   case 79: /* print_list: print_item  */
-#line 607 "l24.y"
+#line 606 "l24.y"
     {}
-#line 2345 "parser.cpp"
+#line 2344 "parser.cpp"
     break;
 
   case 80: /* print_list: print_list COMMA print_item  */
-#line 609 "l24.y"
+#line 608 "l24.y"
     {}
-#line 2351 "parser.cpp"
+#line 2350 "parser.cpp"
     break;
 
   case 81: /* scan_stmt: SCANSYM LPAREN scan_list RPAREN  */
-#line 612 "l24.y"
+#line 611 "l24.y"
     {}
-#line 2357 "parser.cpp"
+#line 2356 "parser.cpp"
     break;
 
   case 82: /* print_stmt: PRINTSYM LPAREN print_list RPAREN  */
-#line 615 "l24.y"
+#line 614 "l24.y"
     {}
-#line 2363 "parser.cpp"
+#line 2362 "parser.cpp"
     break;
 
   case 83: /* expr: and_expr  */
-#line 620 "l24.y"
+#line 619 "l24.y"
     {
         (yyval.expr_inf) = (yyvsp[0].expr_inf);
     }
-#line 2371 "parser.cpp"
+#line 2370 "parser.cpp"
     break;
 
   case 84: /* expr: expr OR and_expr  */
-#line 624 "l24.y"
+#line 623 "l24.y"
     {
         if((yyvsp[-2].expr_inf) && (yyvsp[0].expr_inf)){
             int op = opor;
@@ -2386,19 +2385,19 @@ yyreduce:
             (yyval.expr_inf) = NULL;
         }
     }
-#line 2390 "parser.cpp"
+#line 2389 "parser.cpp"
     break;
 
   case 85: /* and_expr: cmp_expr  */
-#line 640 "l24.y"
+#line 639 "l24.y"
     {
         (yyval.expr_inf) = (yyvsp[0].expr_inf);
     }
-#line 2398 "parser.cpp"
+#line 2397 "parser.cpp"
     break;
 
   case 86: /* and_expr: and_expr AND cmp_expr  */
-#line 644 "l24.y"
+#line 643 "l24.y"
     {
         if((yyvsp[-2].expr_inf) && (yyvsp[0].expr_inf)){
             int op = opand;
@@ -2413,19 +2412,19 @@ yyreduce:
             (yyval.expr_inf) = NULL;
         }
     }
-#line 2417 "parser.cpp"
+#line 2416 "parser.cpp"
     break;
 
   case 87: /* cmp_expr: add_expr  */
-#line 660 "l24.y"
+#line 659 "l24.y"
     {
         (yyval.expr_inf) = (yyvsp[0].expr_inf);
     }
-#line 2425 "parser.cpp"
+#line 2424 "parser.cpp"
     break;
 
   case 88: /* cmp_expr: cmp_expr EQ add_expr  */
-#line 664 "l24.y"
+#line 663 "l24.y"
     {
         if((yyvsp[-2].expr_inf) && (yyvsp[0].expr_inf)){
             int op = opeq;
@@ -2441,11 +2440,11 @@ yyreduce:
             (yyval.expr_inf) = NULL;
         }
     }
-#line 2445 "parser.cpp"
+#line 2444 "parser.cpp"
     break;
 
   case 89: /* cmp_expr: cmp_expr NEQ add_expr  */
-#line 680 "l24.y"
+#line 679 "l24.y"
     {
         if((yyvsp[-2].expr_inf) && (yyvsp[0].expr_inf)){
             int op = opneq;
@@ -2461,11 +2460,11 @@ yyreduce:
             (yyval.expr_inf) = NULL;
         }
     }
-#line 2465 "parser.cpp"
+#line 2464 "parser.cpp"
     break;
 
   case 90: /* cmp_expr: cmp_expr LSS add_expr  */
-#line 696 "l24.y"
+#line 695 "l24.y"
     {
         if((yyvsp[-2].expr_inf) && (yyvsp[0].expr_inf)){
             int op = oplss;
@@ -2480,11 +2479,11 @@ yyreduce:
             (yyval.expr_inf) = NULL;
         }
     }
-#line 2484 "parser.cpp"
+#line 2483 "parser.cpp"
     break;
 
   case 91: /* cmp_expr: cmp_expr LEQ add_expr  */
-#line 711 "l24.y"
+#line 710 "l24.y"
     {
         if((yyvsp[-2].expr_inf) && (yyvsp[0].expr_inf)){
             int op = opleq;
@@ -2499,11 +2498,11 @@ yyreduce:
             (yyval.expr_inf) = NULL;
         }
     }
-#line 2503 "parser.cpp"
+#line 2502 "parser.cpp"
     break;
 
   case 92: /* cmp_expr: cmp_expr GTR add_expr  */
-#line 726 "l24.y"
+#line 725 "l24.y"
     {
         if((yyvsp[-2].expr_inf) && (yyvsp[0].expr_inf)){
             int op = opgtr;
@@ -2518,11 +2517,11 @@ yyreduce:
             (yyval.expr_inf) = NULL;
         }
     }
-#line 2522 "parser.cpp"
+#line 2521 "parser.cpp"
     break;
 
   case 93: /* cmp_expr: cmp_expr GEQ add_expr  */
-#line 741 "l24.y"
+#line 740 "l24.y"
     {
         if((yyvsp[-2].expr_inf) && (yyvsp[0].expr_inf)){
             int op = opgeq;
@@ -2537,19 +2536,19 @@ yyreduce:
             (yyval.expr_inf) = NULL;
         }
     }
-#line 2541 "parser.cpp"
+#line 2540 "parser.cpp"
     break;
 
   case 94: /* add_expr: multi_expr  */
-#line 757 "l24.y"
+#line 756 "l24.y"
     {
         (yyval.expr_inf) = (yyvsp[0].expr_inf);
     }
-#line 2549 "parser.cpp"
+#line 2548 "parser.cpp"
     break;
 
   case 95: /* add_expr: add_expr PLUS multi_expr  */
-#line 761 "l24.y"
+#line 760 "l24.y"
     {
         if((yyvsp[-2].expr_inf) && (yyvsp[0].expr_inf)){
             if((yyvsp[-2].expr_inf)->type_info->t == lint && (yyvsp[0].expr_inf)->type_info->t == lint){
@@ -2604,11 +2603,11 @@ yyreduce:
             (yyval.expr_inf) = NULL;
         }
     }
-#line 2608 "parser.cpp"
+#line 2607 "parser.cpp"
     break;
 
   case 96: /* add_expr: add_expr MINUS multi_expr  */
-#line 816 "l24.y"
+#line 815 "l24.y"
     {
         if((yyvsp[-2].expr_inf) && (yyvsp[0].expr_inf)){
             if((yyvsp[-2].expr_inf)->type_info->t == lint && (yyvsp[0].expr_inf)->type_info->t == lint){
@@ -2629,19 +2628,19 @@ yyreduce:
             (yyval.expr_inf) = NULL;
         }
     }
-#line 2633 "parser.cpp"
+#line 2632 "parser.cpp"
     break;
 
   case 97: /* multi_expr: unary_expr  */
-#line 837 "l24.y"
+#line 836 "l24.y"
     {
         (yyval.expr_inf) = (yyvsp[0].expr_inf);
     }
-#line 2641 "parser.cpp"
+#line 2640 "parser.cpp"
     break;
 
   case 98: /* multi_expr: multi_expr TIMES unary_expr  */
-#line 841 "l24.y"
+#line 840 "l24.y"
     {
         if((yyvsp[-2].expr_inf) && (yyvsp[0].expr_inf)){
             if((yyvsp[-2].expr_inf)->type_info->t == lint && (yyvsp[0].expr_inf)->type_info->t == lint){
@@ -2684,11 +2683,11 @@ yyreduce:
             (yyval.expr_inf) = NULL;
         }
     }
-#line 2688 "parser.cpp"
+#line 2687 "parser.cpp"
     break;
 
   case 99: /* multi_expr: multi_expr SLASH unary_expr  */
-#line 884 "l24.y"
+#line 883 "l24.y"
     {
         if((yyvsp[-2].expr_inf) && (yyvsp[0].expr_inf)){
             if((yyvsp[-2].expr_inf)->type_info->t == lint && (yyvsp[0].expr_inf)->type_info->t == lint){
@@ -2709,11 +2708,11 @@ yyreduce:
             (yyval.expr_inf) = NULL;
         }
     }
-#line 2713 "parser.cpp"
+#line 2712 "parser.cpp"
     break;
 
   case 100: /* multi_expr: multi_expr MOD unary_expr  */
-#line 905 "l24.y"
+#line 904 "l24.y"
     {
         if((yyvsp[-2].expr_inf) && (yyvsp[0].expr_inf)){
             if((yyvsp[-2].expr_inf)->type_info->t == lint && (yyvsp[0].expr_inf)->type_info->t == lint){
@@ -2734,19 +2733,19 @@ yyreduce:
             (yyval.expr_inf) = NULL;
         }
     }
-#line 2738 "parser.cpp"
+#line 2737 "parser.cpp"
     break;
 
   case 101: /* unary_expr: pre_expr  */
-#line 927 "l24.y"
+#line 926 "l24.y"
     {
         (yyval.expr_inf) = (yyvsp[0].expr_inf);
     }
-#line 2746 "parser.cpp"
+#line 2745 "parser.cpp"
     break;
 
   case 102: /* unary_expr: NOT unary_expr  */
-#line 931 "l24.y"
+#line 930 "l24.y"
     {
         if((yyvsp[0].expr_inf)){
             bool flag1 = err_type((yyvsp[0].expr_inf)->type_info, lbool, true, "not a non-bool");
@@ -2761,19 +2760,19 @@ yyreduce:
             (yyval.expr_inf) = NULL;
         }
     }
-#line 2765 "parser.cpp"
+#line 2764 "parser.cpp"
     break;
 
   case 103: /* pre_expr: post_expr  */
-#line 948 "l24.y"
+#line 947 "l24.y"
     {
         (yyval.expr_inf) = (yyvsp[0].expr_inf);
     }
-#line 2773 "parser.cpp"
+#line 2772 "parser.cpp"
     break;
 
   case 104: /* pre_expr: INC post_expr  */
-#line 952 "l24.y"
+#line 951 "l24.y"
     {
         if((yyvsp[0].expr_inf)){
             bool flag1 = err_type((yyvsp[0].expr_inf)->type_info, lint, true, "inc a non-integer");
@@ -2788,11 +2787,11 @@ yyreduce:
         }
         
     }
-#line 2792 "parser.cpp"
+#line 2791 "parser.cpp"
     break;
 
   case 105: /* pre_expr: DEC post_expr  */
-#line 967 "l24.y"
+#line 966 "l24.y"
     {
         if((yyvsp[0].expr_inf)){
             bool flag1 = err_type((yyvsp[0].expr_inf)->type_info, lint, true, "dec a non-integer");
@@ -2806,11 +2805,11 @@ yyreduce:
             (yyval.expr_inf) = NULL;
         }
     }
-#line 2810 "parser.cpp"
+#line 2809 "parser.cpp"
     break;
 
   case 106: /* pre_expr: PLUS post_expr  */
-#line 981 "l24.y"
+#line 980 "l24.y"
     {
         if((yyvsp[0].expr_inf)){
             bool flag1 = err_type((yyvsp[0].expr_inf)->type_info, lint, true);
@@ -2828,11 +2827,11 @@ yyreduce:
             (yyval.expr_inf) = NULL;
         }
     }
-#line 2832 "parser.cpp"
+#line 2831 "parser.cpp"
     break;
 
   case 107: /* pre_expr: MINUS post_expr  */
-#line 999 "l24.y"
+#line 998 "l24.y"
     {
         if((yyvsp[0].expr_inf)){
             bool flag1 = err_type((yyvsp[0].expr_inf)->type_info, lint, true);
@@ -2848,19 +2847,19 @@ yyreduce:
             (yyval.expr_inf) = NULL;
         }
     }
-#line 2852 "parser.cpp"
+#line 2851 "parser.cpp"
     break;
 
   case 108: /* post_expr: term  */
-#line 1017 "l24.y"
+#line 1016 "l24.y"
     {
         (yyval.expr_inf) = (yyvsp[0].expr_inf);
     }
-#line 2860 "parser.cpp"
+#line 2859 "parser.cpp"
     break;
 
   case 109: /* post_expr: post_expr INC  */
-#line 1021 "l24.y"
+#line 1020 "l24.y"
     {
         if((yyvsp[-1].expr_inf)){
             bool flag1 = err_type((yyvsp[-1].expr_inf)->type_info, lint, true, "inc a non-integer");
@@ -2878,11 +2877,11 @@ yyreduce:
             (yyval.expr_inf) = NULL;
         }
     }
-#line 2882 "parser.cpp"
+#line 2881 "parser.cpp"
     break;
 
   case 110: /* post_expr: post_expr DEC  */
-#line 1039 "l24.y"
+#line 1038 "l24.y"
     {
         if((yyvsp[-1].expr_inf)){
             bool flag1 = err_type((yyvsp[-1].expr_inf)->type_info, lint, true, "dec a non-integer");
@@ -2901,19 +2900,19 @@ yyreduce:
         }
         
     }
-#line 2905 "parser.cpp"
+#line 2904 "parser.cpp"
     break;
 
   case 111: /* term: factor  */
-#line 1059 "l24.y"
+#line 1058 "l24.y"
     {
         (yyval.expr_inf) = (yyvsp[0].expr_inf);
     }
-#line 2913 "parser.cpp"
+#line 2912 "parser.cpp"
     break;
 
   case 112: /* term: ADDR term  */
-#line 1063 "l24.y"
+#line 1062 "l24.y"
     {
         if((yyvsp[0].expr_inf)){
             /* 取地址符只能处理左值类型 */
@@ -2949,11 +2948,11 @@ yyreduce:
             (yyval.expr_inf) = NULL;
         }
     }
-#line 2953 "parser.cpp"
+#line 2952 "parser.cpp"
     break;
 
   case 113: /* term: TIMES term  */
-#line 1099 "l24.y"
+#line 1098 "l24.y"
     {
         if((yyvsp[0].expr_inf)){
             /* 如果栈顶是左值, 加载值至栈顶 */
@@ -2980,19 +2979,19 @@ yyreduce:
             (yyval.expr_inf) = NULL;
         }
     }
-#line 2984 "parser.cpp"
+#line 2983 "parser.cpp"
     break;
 
   case 114: /* factor: LPAREN expr RPAREN  */
-#line 1127 "l24.y"
+#line 1126 "l24.y"
     {
         (yyval.expr_inf) = (yyvsp[-1].expr_inf);
     }
-#line 2992 "parser.cpp"
+#line 2991 "parser.cpp"
     break;
 
   case 115: /* factor: ID  */
-#line 1131 "l24.y"
+#line 1130 "l24.y"
     {
         int tbl_idx = table_position((yyvsp[0].ident), tbl_tail);
         if(err_ident(tbl_idx)){
@@ -3017,11 +3016,11 @@ yyreduce:
             (yyval.expr_inf) = NULL;
         }
     }
-#line 3021 "parser.cpp"
+#line 3020 "parser.cpp"
     break;
 
   case 116: /* factor: ID arr_idx  */
-#line 1156 "l24.y"
+#line 1155 "l24.y"
     {
         int tbl_idx = table_position((yyvsp[-1].ident), tbl_tail);
         if(err_ident(tbl_idx)){
@@ -3094,20 +3093,20 @@ yyreduce:
         }
 
     }
-#line 3098 "parser.cpp"
+#line 3097 "parser.cpp"
     break;
 
   case 117: /* $@20: %empty  */
-#line 1229 "l24.y"
+#line 1228 "l24.y"
     {
         /* 压入当前堆尾地址 */
         vm_gen(reg, 0, 0);
     }
-#line 3107 "parser.cpp"
+#line 3106 "parser.cpp"
     break;
 
   case 118: /* factor: ID LPAREN $@20 arg_list RPAREN  */
-#line 1234 "l24.y"
+#line 1233 "l24.y"
     {
         /* 获取函数标识符表项 */
         int tbl_idx = table_position((yyvsp[-4].ident), tbl_tail);
@@ -3131,20 +3130,20 @@ yyreduce:
             (yyval.expr_inf) = NULL;
         }
     }
-#line 3135 "parser.cpp"
+#line 3134 "parser.cpp"
     break;
 
   case 119: /* $@21: %empty  */
-#line 1258 "l24.y"
+#line 1257 "l24.y"
     {
         /* 压入当前堆尾地址 */
         vm_gen(reg, 0, 0);
     }
-#line 3144 "parser.cpp"
+#line 3143 "parser.cpp"
     break;
 
   case 120: /* factor: ID LPAREN $@21 RPAREN  */
-#line 1263 "l24.y"
+#line 1262 "l24.y"
     {
         /* 获取函数标识符表项 */
         int tbl_idx = table_position((yyvsp[-3].ident), tbl_tail);
@@ -3166,11 +3165,11 @@ yyreduce:
             (yyval.expr_inf) = NULL;
         }
     }
-#line 3170 "parser.cpp"
+#line 3169 "parser.cpp"
     break;
 
   case 121: /* factor: LIT  */
-#line 1285 "l24.y"
+#line 1284 "l24.y"
     {
         if((yyvsp[0].lit_inf)){
             type_desp* type_factor = create_type_desp((yyvsp[0].lit_inf)->t, -1, -1);
@@ -3188,28 +3187,28 @@ yyreduce:
             (yyval.expr_inf) = NULL;
         }
     }
-#line 3192 "parser.cpp"
+#line 3191 "parser.cpp"
     break;
 
   case 122: /* rec_cbuf_pc: %empty  */
-#line 1303 "l24.y"
+#line 1302 "l24.y"
     {
         /* 更新 block_pc_stack*/
         (yyval.number) = vm_record(); 
     }
-#line 3201 "parser.cpp"
+#line 3200 "parser.cpp"
     break;
 
   case 123: /* load_params: %empty  */
-#line 1308 "l24.y"
+#line 1307 "l24.y"
     {
         push_flag = !push_flag;
     }
-#line 3209 "parser.cpp"
+#line 3208 "parser.cpp"
     break;
 
 
-#line 3213 "parser.cpp"
+#line 3212 "parser.cpp"
 
       default: break;
     }
@@ -3433,7 +3432,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 1315 "l24.y"
+#line 1314 "l24.y"
 
 expr_s* gen_cmp_code(int op, expr_s* s1, expr_s* s3){
     vm_gen(binop, op, 0, NULL, s1->islval, s3->islval);
@@ -3614,8 +3613,16 @@ int main(int argc,char **argv) {
     if(argc > 2 && strcmp(argv[2], "-g") == 0){
         int cmd_cnt = 0;
         char cache_file[50];
-        
         FILE* cache;
+
+        sprintf(cache_file, "./cache/%d.txt", cmd_cnt);
+        if((cache = fopen(cache_file, "w")) == NULL){
+            printf("Can't open cache file!\n");
+            exit(1);
+        }
+        cmd_cnt+=1;
+        fclose(cache);
+        
         while(scanf("%c", &cmd) > 0){
             if(cmd == 'q'){ break; }
             else if(cmd == 'e'){
