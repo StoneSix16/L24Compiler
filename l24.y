@@ -1451,7 +1451,7 @@ int main(int argc,char **argv) {
 	}
 
     if(argc > 2 && strcmp(argv[2], "-g") == 0){
-        if ((finput = fopen("finput.txt", "w")) == NULL){
+        if ((finput = fopen("finput.txt", "r")) == NULL){
             printf("Can't open finput.txt file!\n");
             exit(1);
         }

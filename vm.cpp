@@ -228,18 +228,30 @@ void vm_step(FILE* inf, FILE* outf){
             break;
         }
         case scn:{
-            if(i->op2 == lbool || i->op2 == lint){
+            if(i->op2 == lint){
+                printf("int scanf\n");
                 fscanf(inf, "%d", cur_stack+((*cur_top)++));
             }
             else if(i->op2 == lstring){
                     fscanf(inf, "%s", vm_strbuf);
-                    object* obj = vm_heap[vm_tail];
-                    obj->str_data = (char*) malloc(sizeof(char)*strlen(vm_strbuf));
+                    object* obj = (object*)malloc(sizeof(object)); 
+                    int len = strlen(vm_strbuf);
+                    obj->str_data = (char*) malloc(len);
                     strcpy(obj->str_data, vm_strbuf);
-                    obj->str_len = strlen(obj->str_data);
-                    
+                    obj->str_len = len;
+
+                    vm_heap[vm_tail] = obj;
                     cur_stack[(*cur_top)++] = vm_tail++;
-                }
+            }
+            else if(i->op2 == lbool){
+                    fscanf(inf, "%s", vm_strbuf);
+                    if(strcmp(vm_strbuf, "true") == 0) {cur_stack[(*cur_top)++] = 1;}
+                    else if(strcmp(vm_strbuf, "false") == 0) {cur_stack[(*cur_top)++] = 0;}
+                    else {
+                        fprintf(outf, "an invalid bool input\n");
+                        cur_stack[(*cur_top)++] = 0;
+                    }
+            }
             else{}
             break;
         }
