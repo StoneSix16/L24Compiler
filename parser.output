@@ -1,0 +1,3267 @@
+Grammar
+
+    0 $accept: program $end
+
+    1 $@1: %empty
+
+    2 program: MAINSYM $@1 rec_cbuf_pc LBRACE stmt_list RBRACE
+
+    3 stmt_list: %empty
+    4          | stmt_list stmt
+
+    5 stmt: decl_stmt SEMICOLON
+    6     | expr_stmt SEMICOLON
+    7     | if_stmt SEMICOLON
+    8     | while_stmt
+    9     | for_stmt
+   10     | ret_stmt SEMICOLON
+   11     | scan_stmt SEMICOLON
+   12     | print_stmt SEMICOLON
+
+   13 $@2: %empty
+
+   14 stmt: decl_stmt $@2 error SEMICOLON
+
+   15 $@3: %empty
+
+   16 stmt: expr_stmt $@3 error SEMICOLON
+
+   17 $@4: %empty
+
+   18 stmt: if_stmt $@4 error SEMICOLON
+
+   19 $@5: %empty
+
+   20 stmt: ret_stmt $@5 error SEMICOLON
+
+   21 $@6: %empty
+
+   22 stmt: scan_stmt $@6 error SEMICOLON
+
+   23 $@7: %empty
+
+   24 stmt: print_stmt $@7 error SEMICOLON
+   25     | SEMICOLON
+
+   26 $@8: %empty
+
+   27 proc: LPAREN load_params param_list load_params RPAREN $@8 rec_cbuf_pc LBRACE stmt_list RBRACE
+
+   28 $@9: %empty
+
+   29 proc: LPAREN RPAREN $@9 rec_cbuf_pc LBRACE stmt_list RBRACE
+
+   30 ret_stmt: RETSYM expr
+
+   31 end_block: %empty
+
+   32 type_spec: type
+   33          | type pointer
+
+   34 pointer: TIMES
+   35        | pointer TIMES
+
+   36 type: STRSYM
+   37     | INTSYM
+   38     | BOOLSYM
+
+   39 declarator: ID
+   40           | ID arr_dim
+
+   41 decl_stmt: type_spec declarator
+
+   42 $@10: %empty
+
+   43 @11: %empty
+
+   44 $@12: %empty
+
+   45 decl_stmt: type_spec declarator $@10 @11 proc end_block $@12
+
+   46 arr_dim: LBRACKET LIT RBRACKET
+   47        | arr_dim LBRACKET LIT RBRACKET
+
+   48 arr_idx: LBRACKET expr RBRACKET
+   49        | arr_idx LBRACKET expr RBRACKET
+
+   50 param_list: decl_stmt
+   51           | param_list COMMA decl_stmt
+
+   52 arg_list: expr
+   53         | arg_list COMMA expr
+
+   54 expr_stmt: expr BECOMES expr
+   55          | expr
+
+   56 condition: expr
+
+   57 if_stmt: if_part_ifthen ENDSYM
+
+   58 @13: %empty
+
+   59 $@14: %empty
+
+   60 if_stmt: if_part_ifthen @13 if_part_else $@14 ENDSYM
+
+   61 @15: %empty
+
+   62 if_part_ifthen: IFSYM LPAREN condition RPAREN THENSYM @15 LBRACE stmt_list RBRACE
+
+   63 if_part_else: ELSESYM LBRACE stmt_list RBRACE
+
+   64 @16: %empty
+
+   65 @17: %empty
+
+   66 while_stmt: WHILESYM @16 LPAREN condition RPAREN @17 LBRACE stmt_list RBRACE
+
+   67 for_expr: expr_stmt
+   68         | for_expr COMMA expr_stmt
+
+   69 for_substmt: %empty
+   70            | for_expr
+
+   71 @18: %empty
+
+   72 @19: %empty
+
+   73 for_stmt: FORSYM LPAREN for_substmt SEMICOLON @18 condition SEMICOLON @19 rec_cbuf_pc for_substmt RPAREN rec_cbuf_pc LBRACE stmt_list RBRACE
+
+   74 scan_item: expr
+
+   75 print_item: expr
+
+   76 scan_list: scan_item
+   77          | scan_list COMMA scan_item
+
+   78 print_list: print_item
+   79           | print_list COMMA print_item
+
+   80 scan_stmt: SCANSYM LPAREN scan_list RPAREN
+
+   81 print_stmt: PRINTSYM LPAREN print_list RPAREN
+
+   82 expr: and_expr
+   83     | expr OR and_expr
+
+   84 and_expr: cmp_expr
+   85         | and_expr AND cmp_expr
+
+   86 cmp_expr: add_expr
+   87         | cmp_expr EQ add_expr
+   88         | cmp_expr NEQ add_expr
+   89         | cmp_expr LSS add_expr
+   90         | cmp_expr LEQ add_expr
+   91         | cmp_expr GTR add_expr
+   92         | cmp_expr GEQ add_expr
+
+   93 add_expr: multi_expr
+   94         | add_expr PLUS multi_expr
+   95         | add_expr MINUS multi_expr
+
+   96 multi_expr: unary_expr
+   97           | multi_expr TIMES unary_expr
+   98           | multi_expr SLASH unary_expr
+   99           | multi_expr MOD unary_expr
+
+  100 unary_expr: pre_expr
+  101           | NOT unary_expr
+
+  102 pre_expr: post_expr
+  103         | INC post_expr
+  104         | DEC post_expr
+  105         | PLUS post_expr
+  106         | MINUS post_expr
+
+  107 post_expr: term
+  108          | post_expr INC
+  109          | post_expr DEC
+
+  110 term: factor
+  111     | ADDR term
+  112     | TIMES term
+
+  113 factor: LPAREN expr RPAREN
+  114       | ID
+  115       | ID arr_idx
+
+  116 $@20: %empty
+
+  117 factor: ID LPAREN $@20 arg_list RPAREN
+
+  118 $@21: %empty
+
+  119 factor: ID LPAREN $@21 RPAREN
+  120       | LIT
+
+  121 rec_cbuf_pc: %empty
+
+  122 load_params: %empty
+
+
+Terminals, with rules where they appear
+
+    $end (0) 0
+    error (256) 14 16 18 20 22 24
+    MAINSYM (258) 2
+    IFSYM (259) 62
+    ELSESYM (260) 63
+    THENSYM (261) 62
+    ENDSYM (262) 57 60
+    FORSYM (263) 73
+    WHILESYM (264) 66
+    PRINTSYM (265) 81
+    SCANSYM (266) 80
+    RETSYM (267) 30
+    LBRACE (268) 2 27 29 62 63 66 73
+    RBRACE (269) 2 27 29 62 63 66 73
+    LBRACKET (270) 46 47 48 49
+    RBRACKET (271) 46 47 48 49
+    SEMICOLON (272) 5 6 7 10 11 12 14 16 18 20 22 24 25 73
+    COMMA (273) 51 53 68 77 79
+    LPAREN (274) 27 29 62 66 73 80 81 113 117 119
+    RPAREN (275) 27 29 62 66 73 80 81 113 117 119
+    OR (276) 83
+    AND (277) 85
+    LSS (278) 89
+    LEQ (279) 90
+    GTR (280) 91
+    GEQ (281) 92
+    EQ (282) 87
+    NEQ (283) 88
+    PLUS (284) 94 105
+    MINUS (285) 95 106
+    TIMES (286) 34 35 97 112
+    SLASH (287) 98
+    MOD (288) 99
+    INC (289) 103 108
+    DEC (290) 104 109
+    NOT (291) 101
+    ADDR (292) 111
+    BECOMES (293) 54
+    INTSYM <type_name> (294) 37
+    STRSYM <type_name> (295) 36
+    BOOLSYM <type_name> (296) 38
+    ID <ident> (297) 39 40 114 115 117 119
+    LIT <lit_inf> (298) 46 47 120
+
+
+Nonterminals, with rules where they appear
+
+    $accept (44)
+        on left: 0
+    program (45)
+        on left: 2
+        on right: 0
+    $@1 (46)
+        on left: 1
+        on right: 2
+    stmt_list (47)
+        on left: 3 4
+        on right: 2 4 27 29 62 63 66 73
+    stmt (48)
+        on left: 5 6 7 8 9 10 11 12 14 16 18 20 22 24 25
+        on right: 4
+    $@2 (49)
+        on left: 13
+        on right: 14
+    $@3 (50)
+        on left: 15
+        on right: 16
+    $@4 (51)
+        on left: 17
+        on right: 18
+    $@5 (52)
+        on left: 19
+        on right: 20
+    $@6 (53)
+        on left: 21
+        on right: 22
+    $@7 (54)
+        on left: 23
+        on right: 24
+    proc (55)
+        on left: 27 29
+        on right: 45
+    $@8 (56)
+        on left: 26
+        on right: 27
+    $@9 (57)
+        on left: 28
+        on right: 29
+    ret_stmt <type_inf> (58)
+        on left: 30
+        on right: 10 20
+    end_block (59)
+        on left: 31
+        on right: 45
+    type_spec <type_inf> (60)
+        on left: 32 33
+        on right: 41 45
+    pointer <number> (61)
+        on left: 34 35
+        on right: 33 35
+    type <type_name> (62)
+        on left: 36 37 38
+        on right: 32 33
+    declarator <type_inf> (63)
+        on left: 39 40
+        on right: 41 45
+    decl_stmt <type_name> (64)
+        on left: 41 45
+        on right: 5 14 50 51
+    $@10 (65)
+        on left: 42
+        on right: 45
+    @11 (66)
+        on left: 43
+        on right: 45
+    $@12 (67)
+        on left: 44
+        on right: 45
+    arr_dim <type_inf> (68)
+        on left: 46 47
+        on right: 40 47
+    arr_idx <arr_idx_inf> (69)
+        on left: 48 49
+        on right: 49 115
+    param_list <arg_inf> (70)
+        on left: 50 51
+        on right: 27 51
+    arg_list <arg_inf> (71)
+        on left: 52 53
+        on right: 53 117
+    expr_stmt (72)
+        on left: 54 55
+        on right: 6 16 67 68
+    condition <expr_inf> (73)
+        on left: 56
+        on right: 62 66 73
+    if_stmt (74)
+        on left: 57 60
+        on right: 7 18
+    @13 (75)
+        on left: 58
+        on right: 60
+    $@14 (76)
+        on left: 59
+        on right: 60
+    if_part_ifthen (77)
+        on left: 62
+        on right: 57 60
+    @15 (78)
+        on left: 61
+        on right: 62
+    if_part_else (79)
+        on left: 63
+        on right: 60
+    while_stmt (80)
+        on left: 66
+        on right: 8
+    @16 (81)
+        on left: 64
+        on right: 66
+    @17 (82)
+        on left: 65
+        on right: 66
+    for_expr (83)
+        on left: 67 68
+        on right: 68 70
+    for_substmt (84)
+        on left: 69 70
+        on right: 73
+    for_stmt (85)
+        on left: 73
+        on right: 9
+    @18 (86)
+        on left: 71
+        on right: 73
+    @19 (87)
+        on left: 72
+        on right: 73
+    scan_item (88)
+        on left: 74
+        on right: 76 77
+    print_item (89)
+        on left: 75
+        on right: 78 79
+    scan_list <arg_inf> (90)
+        on left: 76 77
+        on right: 77 80
+    print_list (91)
+        on left: 78 79
+        on right: 79 81
+    scan_stmt (92)
+        on left: 80
+        on right: 11 22
+    print_stmt (93)
+        on left: 81
+        on right: 12 24
+    expr <expr_inf> (94)
+        on left: 82 83
+        on right: 30 48 49 52 53 54 55 56 74 75 83 113
+    and_expr <expr_inf> (95)
+        on left: 84 85
+        on right: 82 83 85
+    cmp_expr <expr_inf> (96)
+        on left: 86 87 88 89 90 91 92
+        on right: 84 85 87 88 89 90 91 92
+    add_expr <expr_inf> (97)
+        on left: 93 94 95
+        on right: 86 87 88 89 90 91 92 94 95
+    multi_expr <expr_inf> (98)
+        on left: 96 97 98 99
+        on right: 93 94 95 97 98 99
+    unary_expr <expr_inf> (99)
+        on left: 100 101
+        on right: 96 97 98 99 101
+    pre_expr <expr_inf> (100)
+        on left: 102 103 104 105 106
+        on right: 100
+    post_expr <expr_inf> (101)
+        on left: 107 108 109
+        on right: 102 103 104 105 106 108 109
+    term <expr_inf> (102)
+        on left: 110 111 112
+        on right: 107 111 112
+    factor <expr_inf> (103)
+        on left: 113 114 115 117 119 120
+        on right: 110
+    $@20 (104)
+        on left: 116
+        on right: 117
+    $@21 (105)
+        on left: 118
+        on right: 119
+    rec_cbuf_pc <number> (106)
+        on left: 121
+        on right: 2 27 29 73
+    load_params (107)
+        on left: 122
+        on right: 27
+
+
+State 0
+
+    0 $accept: . program $end
+
+    MAINSYM  shift, and go to state 1
+
+    program  go to state 2
+
+
+State 1
+
+    2 program: MAINSYM . $@1 rec_cbuf_pc LBRACE stmt_list RBRACE
+
+    $default  reduce using rule 1 ($@1)
+
+    $@1  go to state 3
+
+
+State 2
+
+    0 $accept: program . $end
+
+    $end  shift, and go to state 4
+
+
+State 3
+
+    2 program: MAINSYM $@1 . rec_cbuf_pc LBRACE stmt_list RBRACE
+
+    $default  reduce using rule 121 (rec_cbuf_pc)
+
+    rec_cbuf_pc  go to state 5
+
+
+State 4
+
+    0 $accept: program $end .
+
+    $default  accept
+
+
+State 5
+
+    2 program: MAINSYM $@1 rec_cbuf_pc . LBRACE stmt_list RBRACE
+
+    LBRACE  shift, and go to state 6
+
+
+State 6
+
+    2 program: MAINSYM $@1 rec_cbuf_pc LBRACE . stmt_list RBRACE
+
+    $default  reduce using rule 3 (stmt_list)
+
+    stmt_list  go to state 7
+
+
+State 7
+
+    2 program: MAINSYM $@1 rec_cbuf_pc LBRACE stmt_list . RBRACE
+    4 stmt_list: stmt_list . stmt
+
+    IFSYM      shift, and go to state 8
+    FORSYM     shift, and go to state 9
+    WHILESYM   shift, and go to state 10
+    PRINTSYM   shift, and go to state 11
+    SCANSYM    shift, and go to state 12
+    RETSYM     shift, and go to state 13
+    RBRACE     shift, and go to state 14
+    SEMICOLON  shift, and go to state 15
+    LPAREN     shift, and go to state 16
+    PLUS       shift, and go to state 17
+    MINUS      shift, and go to state 18
+    TIMES      shift, and go to state 19
+    INC        shift, and go to state 20
+    DEC        shift, and go to state 21
+    NOT        shift, and go to state 22
+    ADDR       shift, and go to state 23
+    INTSYM     shift, and go to state 24
+    STRSYM     shift, and go to state 25
+    BOOLSYM    shift, and go to state 26
+    ID         shift, and go to state 27
+    LIT        shift, and go to state 28
+
+    stmt            go to state 29
+    ret_stmt        go to state 30
+    type_spec       go to state 31
+    type            go to state 32
+    decl_stmt       go to state 33
+    expr_stmt       go to state 34
+    if_stmt         go to state 35
+    if_part_ifthen  go to state 36
+    while_stmt      go to state 37
+    for_stmt        go to state 38
+    scan_stmt       go to state 39
+    print_stmt      go to state 40
+    expr            go to state 41
+    and_expr        go to state 42
+    cmp_expr        go to state 43
+    add_expr        go to state 44
+    multi_expr      go to state 45
+    unary_expr      go to state 46
+    pre_expr        go to state 47
+    post_expr       go to state 48
+    term            go to state 49
+    factor          go to state 50
+
+
+State 8
+
+   62 if_part_ifthen: IFSYM . LPAREN condition RPAREN THENSYM @15 LBRACE stmt_list RBRACE
+
+    LPAREN  shift, and go to state 51
+
+
+State 9
+
+   73 for_stmt: FORSYM . LPAREN for_substmt SEMICOLON @18 condition SEMICOLON @19 rec_cbuf_pc for_substmt RPAREN rec_cbuf_pc LBRACE stmt_list RBRACE
+
+    LPAREN  shift, and go to state 52
+
+
+State 10
+
+   66 while_stmt: WHILESYM . @16 LPAREN condition RPAREN @17 LBRACE stmt_list RBRACE
+
+    $default  reduce using rule 64 (@16)
+
+    @16  go to state 53
+
+
+State 11
+
+   81 print_stmt: PRINTSYM . LPAREN print_list RPAREN
+
+    LPAREN  shift, and go to state 54
+
+
+State 12
+
+   80 scan_stmt: SCANSYM . LPAREN scan_list RPAREN
+
+    LPAREN  shift, and go to state 55
+
+
+State 13
+
+   30 ret_stmt: RETSYM . expr
+
+    LPAREN  shift, and go to state 16
+    PLUS    shift, and go to state 17
+    MINUS   shift, and go to state 18
+    TIMES   shift, and go to state 19
+    INC     shift, and go to state 20
+    DEC     shift, and go to state 21
+    NOT     shift, and go to state 22
+    ADDR    shift, and go to state 23
+    ID      shift, and go to state 27
+    LIT     shift, and go to state 28
+
+    expr        go to state 56
+    and_expr    go to state 42
+    cmp_expr    go to state 43
+    add_expr    go to state 44
+    multi_expr  go to state 45
+    unary_expr  go to state 46
+    pre_expr    go to state 47
+    post_expr   go to state 48
+    term        go to state 49
+    factor      go to state 50
+
+
+State 14
+
+    2 program: MAINSYM $@1 rec_cbuf_pc LBRACE stmt_list RBRACE .
+
+    $default  reduce using rule 2 (program)
+
+
+State 15
+
+   25 stmt: SEMICOLON .
+
+    $default  reduce using rule 25 (stmt)
+
+
+State 16
+
+  113 factor: LPAREN . expr RPAREN
+
+    LPAREN  shift, and go to state 16
+    PLUS    shift, and go to state 17
+    MINUS   shift, and go to state 18
+    TIMES   shift, and go to state 19
+    INC     shift, and go to state 20
+    DEC     shift, and go to state 21
+    NOT     shift, and go to state 22
+    ADDR    shift, and go to state 23
+    ID      shift, and go to state 27
+    LIT     shift, and go to state 28
+
+    expr        go to state 57
+    and_expr    go to state 42
+    cmp_expr    go to state 43
+    add_expr    go to state 44
+    multi_expr  go to state 45
+    unary_expr  go to state 46
+    pre_expr    go to state 47
+    post_expr   go to state 48
+    term        go to state 49
+    factor      go to state 50
+
+
+State 17
+
+  105 pre_expr: PLUS . post_expr
+
+    LPAREN  shift, and go to state 16
+    TIMES   shift, and go to state 19
+    ADDR    shift, and go to state 23
+    ID      shift, and go to state 27
+    LIT     shift, and go to state 28
+
+    post_expr  go to state 58
+    term       go to state 49
+    factor     go to state 50
+
+
+State 18
+
+  106 pre_expr: MINUS . post_expr
+
+    LPAREN  shift, and go to state 16
+    TIMES   shift, and go to state 19
+    ADDR    shift, and go to state 23
+    ID      shift, and go to state 27
+    LIT     shift, and go to state 28
+
+    post_expr  go to state 59
+    term       go to state 49
+    factor     go to state 50
+
+
+State 19
+
+  112 term: TIMES . term
+
+    LPAREN  shift, and go to state 16
+    TIMES   shift, and go to state 19
+    ADDR    shift, and go to state 23
+    ID      shift, and go to state 27
+    LIT     shift, and go to state 28
+
+    term    go to state 60
+    factor  go to state 50
+
+
+State 20
+
+  103 pre_expr: INC . post_expr
+
+    LPAREN  shift, and go to state 16
+    TIMES   shift, and go to state 19
+    ADDR    shift, and go to state 23
+    ID      shift, and go to state 27
+    LIT     shift, and go to state 28
+
+    post_expr  go to state 61
+    term       go to state 49
+    factor     go to state 50
+
+
+State 21
+
+  104 pre_expr: DEC . post_expr
+
+    LPAREN  shift, and go to state 16
+    TIMES   shift, and go to state 19
+    ADDR    shift, and go to state 23
+    ID      shift, and go to state 27
+    LIT     shift, and go to state 28
+
+    post_expr  go to state 62
+    term       go to state 49
+    factor     go to state 50
+
+
+State 22
+
+  101 unary_expr: NOT . unary_expr
+
+    LPAREN  shift, and go to state 16
+    PLUS    shift, and go to state 17
+    MINUS   shift, and go to state 18
+    TIMES   shift, and go to state 19
+    INC     shift, and go to state 20
+    DEC     shift, and go to state 21
+    NOT     shift, and go to state 22
+    ADDR    shift, and go to state 23
+    ID      shift, and go to state 27
+    LIT     shift, and go to state 28
+
+    unary_expr  go to state 63
+    pre_expr    go to state 47
+    post_expr   go to state 48
+    term        go to state 49
+    factor      go to state 50
+
+
+State 23
+
+  111 term: ADDR . term
+
+    LPAREN  shift, and go to state 16
+    TIMES   shift, and go to state 19
+    ADDR    shift, and go to state 23
+    ID      shift, and go to state 27
+    LIT     shift, and go to state 28
+
+    term    go to state 64
+    factor  go to state 50
+
+
+State 24
+
+   37 type: INTSYM .
+
+    $default  reduce using rule 37 (type)
+
+
+State 25
+
+   36 type: STRSYM .
+
+    $default  reduce using rule 36 (type)
+
+
+State 26
+
+   38 type: BOOLSYM .
+
+    $default  reduce using rule 38 (type)
+
+
+State 27
+
+  114 factor: ID .
+  115       | ID . arr_idx
+  117       | ID . LPAREN $@20 arg_list RPAREN
+  119       | ID . LPAREN $@21 RPAREN
+
+    LBRACKET  shift, and go to state 65
+    LPAREN    shift, and go to state 66
+
+    $default  reduce using rule 114 (factor)
+
+    arr_idx  go to state 67
+
+
+State 28
+
+  120 factor: LIT .
+
+    $default  reduce using rule 120 (factor)
+
+
+State 29
+
+    4 stmt_list: stmt_list stmt .
+
+    $default  reduce using rule 4 (stmt_list)
+
+
+State 30
+
+   10 stmt: ret_stmt . SEMICOLON
+   20     | ret_stmt . $@5 error SEMICOLON
+
+    SEMICOLON  shift, and go to state 68
+
+    $default  reduce using rule 19 ($@5)
+
+    $@5  go to state 69
+
+
+State 31
+
+   41 decl_stmt: type_spec . declarator
+   45          | type_spec . declarator $@10 @11 proc end_block $@12
+
+    ID  shift, and go to state 70
+
+    declarator  go to state 71
+
+
+State 32
+
+   32 type_spec: type .
+   33          | type . pointer
+
+    TIMES  shift, and go to state 72
+
+    $default  reduce using rule 32 (type_spec)
+
+    pointer  go to state 73
+
+
+State 33
+
+    5 stmt: decl_stmt . SEMICOLON
+   14     | decl_stmt . $@2 error SEMICOLON
+
+    SEMICOLON  shift, and go to state 74
+
+    $default  reduce using rule 13 ($@2)
+
+    $@2  go to state 75
+
+
+State 34
+
+    6 stmt: expr_stmt . SEMICOLON
+   16     | expr_stmt . $@3 error SEMICOLON
+
+    SEMICOLON  shift, and go to state 76
+
+    $default  reduce using rule 15 ($@3)
+
+    $@3  go to state 77
+
+
+State 35
+
+    7 stmt: if_stmt . SEMICOLON
+   18     | if_stmt . $@4 error SEMICOLON
+
+    SEMICOLON  shift, and go to state 78
+
+    $default  reduce using rule 17 ($@4)
+
+    $@4  go to state 79
+
+
+State 36
+
+   57 if_stmt: if_part_ifthen . ENDSYM
+   60        | if_part_ifthen . @13 if_part_else $@14 ENDSYM
+
+    ENDSYM  shift, and go to state 80
+
+    $default  reduce using rule 58 (@13)
+
+    @13  go to state 81
+
+
+State 37
+
+    8 stmt: while_stmt .
+
+    $default  reduce using rule 8 (stmt)
+
+
+State 38
+
+    9 stmt: for_stmt .
+
+    $default  reduce using rule 9 (stmt)
+
+
+State 39
+
+   11 stmt: scan_stmt . SEMICOLON
+   22     | scan_stmt . $@6 error SEMICOLON
+
+    SEMICOLON  shift, and go to state 82
+
+    $default  reduce using rule 21 ($@6)
+
+    $@6  go to state 83
+
+
+State 40
+
+   12 stmt: print_stmt . SEMICOLON
+   24     | print_stmt . $@7 error SEMICOLON
+
+    SEMICOLON  shift, and go to state 84
+
+    $default  reduce using rule 23 ($@7)
+
+    $@7  go to state 85
+
+
+State 41
+
+   54 expr_stmt: expr . BECOMES expr
+   55          | expr .
+   83 expr: expr . OR and_expr
+
+    OR       shift, and go to state 86
+    BECOMES  shift, and go to state 87
+
+    $default  reduce using rule 55 (expr_stmt)
+
+
+State 42
+
+   82 expr: and_expr .
+   85 and_expr: and_expr . AND cmp_expr
+
+    AND  shift, and go to state 88
+
+    $default  reduce using rule 82 (expr)
+
+
+State 43
+
+   84 and_expr: cmp_expr .
+   87 cmp_expr: cmp_expr . EQ add_expr
+   88         | cmp_expr . NEQ add_expr
+   89         | cmp_expr . LSS add_expr
+   90         | cmp_expr . LEQ add_expr
+   91         | cmp_expr . GTR add_expr
+   92         | cmp_expr . GEQ add_expr
+
+    LSS  shift, and go to state 89
+    LEQ  shift, and go to state 90
+    GTR  shift, and go to state 91
+    GEQ  shift, and go to state 92
+    EQ   shift, and go to state 93
+    NEQ  shift, and go to state 94
+
+    $default  reduce using rule 84 (and_expr)
+
+
+State 44
+
+   86 cmp_expr: add_expr .
+   94 add_expr: add_expr . PLUS multi_expr
+   95         | add_expr . MINUS multi_expr
+
+    PLUS   shift, and go to state 95
+    MINUS  shift, and go to state 96
+
+    $default  reduce using rule 86 (cmp_expr)
+
+
+State 45
+
+   93 add_expr: multi_expr .
+   97 multi_expr: multi_expr . TIMES unary_expr
+   98           | multi_expr . SLASH unary_expr
+   99           | multi_expr . MOD unary_expr
+
+    TIMES  shift, and go to state 97
+    SLASH  shift, and go to state 98
+    MOD    shift, and go to state 99
+
+    $default  reduce using rule 93 (add_expr)
+
+
+State 46
+
+   96 multi_expr: unary_expr .
+
+    $default  reduce using rule 96 (multi_expr)
+
+
+State 47
+
+  100 unary_expr: pre_expr .
+
+    $default  reduce using rule 100 (unary_expr)
+
+
+State 48
+
+  102 pre_expr: post_expr .
+  108 post_expr: post_expr . INC
+  109          | post_expr . DEC
+
+    INC  shift, and go to state 100
+    DEC  shift, and go to state 101
+
+    $default  reduce using rule 102 (pre_expr)
+
+
+State 49
+
+  107 post_expr: term .
+
+    $default  reduce using rule 107 (post_expr)
+
+
+State 50
+
+  110 term: factor .
+
+    $default  reduce using rule 110 (term)
+
+
+State 51
+
+   62 if_part_ifthen: IFSYM LPAREN . condition RPAREN THENSYM @15 LBRACE stmt_list RBRACE
+
+    LPAREN  shift, and go to state 16
+    PLUS    shift, and go to state 17
+    MINUS   shift, and go to state 18
+    TIMES   shift, and go to state 19
+    INC     shift, and go to state 20
+    DEC     shift, and go to state 21
+    NOT     shift, and go to state 22
+    ADDR    shift, and go to state 23
+    ID      shift, and go to state 27
+    LIT     shift, and go to state 28
+
+    condition   go to state 102
+    expr        go to state 103
+    and_expr    go to state 42
+    cmp_expr    go to state 43
+    add_expr    go to state 44
+    multi_expr  go to state 45
+    unary_expr  go to state 46
+    pre_expr    go to state 47
+    post_expr   go to state 48
+    term        go to state 49
+    factor      go to state 50
+
+
+State 52
+
+   73 for_stmt: FORSYM LPAREN . for_substmt SEMICOLON @18 condition SEMICOLON @19 rec_cbuf_pc for_substmt RPAREN rec_cbuf_pc LBRACE stmt_list RBRACE
+
+    LPAREN  shift, and go to state 16
+    PLUS    shift, and go to state 17
+    MINUS   shift, and go to state 18
+    TIMES   shift, and go to state 19
+    INC     shift, and go to state 20
+    DEC     shift, and go to state 21
+    NOT     shift, and go to state 22
+    ADDR    shift, and go to state 23
+    ID      shift, and go to state 27
+    LIT     shift, and go to state 28
+
+    $default  reduce using rule 69 (for_substmt)
+
+    expr_stmt    go to state 104
+    for_expr     go to state 105
+    for_substmt  go to state 106
+    expr         go to state 41
+    and_expr     go to state 42
+    cmp_expr     go to state 43
+    add_expr     go to state 44
+    multi_expr   go to state 45
+    unary_expr   go to state 46
+    pre_expr     go to state 47
+    post_expr    go to state 48
+    term         go to state 49
+    factor       go to state 50
+
+
+State 53
+
+   66 while_stmt: WHILESYM @16 . LPAREN condition RPAREN @17 LBRACE stmt_list RBRACE
+
+    LPAREN  shift, and go to state 107
+
+
+State 54
+
+   81 print_stmt: PRINTSYM LPAREN . print_list RPAREN
+
+    LPAREN  shift, and go to state 16
+    PLUS    shift, and go to state 17
+    MINUS   shift, and go to state 18
+    TIMES   shift, and go to state 19
+    INC     shift, and go to state 20
+    DEC     shift, and go to state 21
+    NOT     shift, and go to state 22
+    ADDR    shift, and go to state 23
+    ID      shift, and go to state 27
+    LIT     shift, and go to state 28
+
+    print_item  go to state 108
+    print_list  go to state 109
+    expr        go to state 110
+    and_expr    go to state 42
+    cmp_expr    go to state 43
+    add_expr    go to state 44
+    multi_expr  go to state 45
+    unary_expr  go to state 46
+    pre_expr    go to state 47
+    post_expr   go to state 48
+    term        go to state 49
+    factor      go to state 50
+
+
+State 55
+
+   80 scan_stmt: SCANSYM LPAREN . scan_list RPAREN
+
+    LPAREN  shift, and go to state 16
+    PLUS    shift, and go to state 17
+    MINUS   shift, and go to state 18
+    TIMES   shift, and go to state 19
+    INC     shift, and go to state 20
+    DEC     shift, and go to state 21
+    NOT     shift, and go to state 22
+    ADDR    shift, and go to state 23
+    ID      shift, and go to state 27
+    LIT     shift, and go to state 28
+
+    scan_item   go to state 111
+    scan_list   go to state 112
+    expr        go to state 113
+    and_expr    go to state 42
+    cmp_expr    go to state 43
+    add_expr    go to state 44
+    multi_expr  go to state 45
+    unary_expr  go to state 46
+    pre_expr    go to state 47
+    post_expr   go to state 48
+    term        go to state 49
+    factor      go to state 50
+
+
+State 56
+
+   30 ret_stmt: RETSYM expr .
+   83 expr: expr . OR and_expr
+
+    OR  shift, and go to state 86
+
+    $default  reduce using rule 30 (ret_stmt)
+
+
+State 57
+
+   83 expr: expr . OR and_expr
+  113 factor: LPAREN expr . RPAREN
+
+    RPAREN  shift, and go to state 114
+    OR      shift, and go to state 86
+
+
+State 58
+
+  105 pre_expr: PLUS post_expr .
+  108 post_expr: post_expr . INC
+  109          | post_expr . DEC
+
+    INC  shift, and go to state 100
+    DEC  shift, and go to state 101
+
+    $default  reduce using rule 105 (pre_expr)
+
+
+State 59
+
+  106 pre_expr: MINUS post_expr .
+  108 post_expr: post_expr . INC
+  109          | post_expr . DEC
+
+    INC  shift, and go to state 100
+    DEC  shift, and go to state 101
+
+    $default  reduce using rule 106 (pre_expr)
+
+
+State 60
+
+  112 term: TIMES term .
+
+    $default  reduce using rule 112 (term)
+
+
+State 61
+
+  103 pre_expr: INC post_expr .
+  108 post_expr: post_expr . INC
+  109          | post_expr . DEC
+
+    INC  shift, and go to state 100
+    DEC  shift, and go to state 101
+
+    $default  reduce using rule 103 (pre_expr)
+
+
+State 62
+
+  104 pre_expr: DEC post_expr .
+  108 post_expr: post_expr . INC
+  109          | post_expr . DEC
+
+    INC  shift, and go to state 100
+    DEC  shift, and go to state 101
+
+    $default  reduce using rule 104 (pre_expr)
+
+
+State 63
+
+  101 unary_expr: NOT unary_expr .
+
+    $default  reduce using rule 101 (unary_expr)
+
+
+State 64
+
+  111 term: ADDR term .
+
+    $default  reduce using rule 111 (term)
+
+
+State 65
+
+   48 arr_idx: LBRACKET . expr RBRACKET
+
+    LPAREN  shift, and go to state 16
+    PLUS    shift, and go to state 17
+    MINUS   shift, and go to state 18
+    TIMES   shift, and go to state 19
+    INC     shift, and go to state 20
+    DEC     shift, and go to state 21
+    NOT     shift, and go to state 22
+    ADDR    shift, and go to state 23
+    ID      shift, and go to state 27
+    LIT     shift, and go to state 28
+
+    expr        go to state 115
+    and_expr    go to state 42
+    cmp_expr    go to state 43
+    add_expr    go to state 44
+    multi_expr  go to state 45
+    unary_expr  go to state 46
+    pre_expr    go to state 47
+    post_expr   go to state 48
+    term        go to state 49
+    factor      go to state 50
+
+
+State 66
+
+  117 factor: ID LPAREN . $@20 arg_list RPAREN
+  119       | ID LPAREN . $@21 RPAREN
+
+    RPAREN    reduce using rule 118 ($@21)
+    $default  reduce using rule 116 ($@20)
+
+    $@20  go to state 116
+    $@21  go to state 117
+
+
+State 67
+
+   49 arr_idx: arr_idx . LBRACKET expr RBRACKET
+  115 factor: ID arr_idx .
+
+    LBRACKET  shift, and go to state 118
+
+    $default  reduce using rule 115 (factor)
+
+
+State 68
+
+   10 stmt: ret_stmt SEMICOLON .
+
+    $default  reduce using rule 10 (stmt)
+
+
+State 69
+
+   20 stmt: ret_stmt $@5 . error SEMICOLON
+
+    error  shift, and go to state 119
+
+
+State 70
+
+   39 declarator: ID .
+   40           | ID . arr_dim
+
+    LBRACKET  shift, and go to state 120
+
+    $default  reduce using rule 39 (declarator)
+
+    arr_dim  go to state 121
+
+
+State 71
+
+   41 decl_stmt: type_spec declarator .
+   45          | type_spec declarator . $@10 @11 proc end_block $@12
+
+    LPAREN    reduce using rule 42 ($@10)
+    $default  reduce using rule 41 (decl_stmt)
+
+    $@10  go to state 122
+
+
+State 72
+
+   34 pointer: TIMES .
+
+    $default  reduce using rule 34 (pointer)
+
+
+State 73
+
+   33 type_spec: type pointer .
+   35 pointer: pointer . TIMES
+
+    TIMES  shift, and go to state 123
+
+    $default  reduce using rule 33 (type_spec)
+
+
+State 74
+
+    5 stmt: decl_stmt SEMICOLON .
+
+    $default  reduce using rule 5 (stmt)
+
+
+State 75
+
+   14 stmt: decl_stmt $@2 . error SEMICOLON
+
+    error  shift, and go to state 124
+
+
+State 76
+
+    6 stmt: expr_stmt SEMICOLON .
+
+    $default  reduce using rule 6 (stmt)
+
+
+State 77
+
+   16 stmt: expr_stmt $@3 . error SEMICOLON
+
+    error  shift, and go to state 125
+
+
+State 78
+
+    7 stmt: if_stmt SEMICOLON .
+
+    $default  reduce using rule 7 (stmt)
+
+
+State 79
+
+   18 stmt: if_stmt $@4 . error SEMICOLON
+
+    error  shift, and go to state 126
+
+
+State 80
+
+   57 if_stmt: if_part_ifthen ENDSYM .
+
+    $default  reduce using rule 57 (if_stmt)
+
+
+State 81
+
+   60 if_stmt: if_part_ifthen @13 . if_part_else $@14 ENDSYM
+
+    ELSESYM  shift, and go to state 127
+
+    if_part_else  go to state 128
+
+
+State 82
+
+   11 stmt: scan_stmt SEMICOLON .
+
+    $default  reduce using rule 11 (stmt)
+
+
+State 83
+
+   22 stmt: scan_stmt $@6 . error SEMICOLON
+
+    error  shift, and go to state 129
+
+
+State 84
+
+   12 stmt: print_stmt SEMICOLON .
+
+    $default  reduce using rule 12 (stmt)
+
+
+State 85
+
+   24 stmt: print_stmt $@7 . error SEMICOLON
+
+    error  shift, and go to state 130
+
+
+State 86
+
+   83 expr: expr OR . and_expr
+
+    LPAREN  shift, and go to state 16
+    PLUS    shift, and go to state 17
+    MINUS   shift, and go to state 18
+    TIMES   shift, and go to state 19
+    INC     shift, and go to state 20
+    DEC     shift, and go to state 21
+    NOT     shift, and go to state 22
+    ADDR    shift, and go to state 23
+    ID      shift, and go to state 27
+    LIT     shift, and go to state 28
+
+    and_expr    go to state 131
+    cmp_expr    go to state 43
+    add_expr    go to state 44
+    multi_expr  go to state 45
+    unary_expr  go to state 46
+    pre_expr    go to state 47
+    post_expr   go to state 48
+    term        go to state 49
+    factor      go to state 50
+
+
+State 87
+
+   54 expr_stmt: expr BECOMES . expr
+
+    LPAREN  shift, and go to state 16
+    PLUS    shift, and go to state 17
+    MINUS   shift, and go to state 18
+    TIMES   shift, and go to state 19
+    INC     shift, and go to state 20
+    DEC     shift, and go to state 21
+    NOT     shift, and go to state 22
+    ADDR    shift, and go to state 23
+    ID      shift, and go to state 27
+    LIT     shift, and go to state 28
+
+    expr        go to state 132
+    and_expr    go to state 42
+    cmp_expr    go to state 43
+    add_expr    go to state 44
+    multi_expr  go to state 45
+    unary_expr  go to state 46
+    pre_expr    go to state 47
+    post_expr   go to state 48
+    term        go to state 49
+    factor      go to state 50
+
+
+State 88
+
+   85 and_expr: and_expr AND . cmp_expr
+
+    LPAREN  shift, and go to state 16
+    PLUS    shift, and go to state 17
+    MINUS   shift, and go to state 18
+    TIMES   shift, and go to state 19
+    INC     shift, and go to state 20
+    DEC     shift, and go to state 21
+    NOT     shift, and go to state 22
+    ADDR    shift, and go to state 23
+    ID      shift, and go to state 27
+    LIT     shift, and go to state 28
+
+    cmp_expr    go to state 133
+    add_expr    go to state 44
+    multi_expr  go to state 45
+    unary_expr  go to state 46
+    pre_expr    go to state 47
+    post_expr   go to state 48
+    term        go to state 49
+    factor      go to state 50
+
+
+State 89
+
+   89 cmp_expr: cmp_expr LSS . add_expr
+
+    LPAREN  shift, and go to state 16
+    PLUS    shift, and go to state 17
+    MINUS   shift, and go to state 18
+    TIMES   shift, and go to state 19
+    INC     shift, and go to state 20
+    DEC     shift, and go to state 21
+    NOT     shift, and go to state 22
+    ADDR    shift, and go to state 23
+    ID      shift, and go to state 27
+    LIT     shift, and go to state 28
+
+    add_expr    go to state 134
+    multi_expr  go to state 45
+    unary_expr  go to state 46
+    pre_expr    go to state 47
+    post_expr   go to state 48
+    term        go to state 49
+    factor      go to state 50
+
+
+State 90
+
+   90 cmp_expr: cmp_expr LEQ . add_expr
+
+    LPAREN  shift, and go to state 16
+    PLUS    shift, and go to state 17
+    MINUS   shift, and go to state 18
+    TIMES   shift, and go to state 19
+    INC     shift, and go to state 20
+    DEC     shift, and go to state 21
+    NOT     shift, and go to state 22
+    ADDR    shift, and go to state 23
+    ID      shift, and go to state 27
+    LIT     shift, and go to state 28
+
+    add_expr    go to state 135
+    multi_expr  go to state 45
+    unary_expr  go to state 46
+    pre_expr    go to state 47
+    post_expr   go to state 48
+    term        go to state 49
+    factor      go to state 50
+
+
+State 91
+
+   91 cmp_expr: cmp_expr GTR . add_expr
+
+    LPAREN  shift, and go to state 16
+    PLUS    shift, and go to state 17
+    MINUS   shift, and go to state 18
+    TIMES   shift, and go to state 19
+    INC     shift, and go to state 20
+    DEC     shift, and go to state 21
+    NOT     shift, and go to state 22
+    ADDR    shift, and go to state 23
+    ID      shift, and go to state 27
+    LIT     shift, and go to state 28
+
+    add_expr    go to state 136
+    multi_expr  go to state 45
+    unary_expr  go to state 46
+    pre_expr    go to state 47
+    post_expr   go to state 48
+    term        go to state 49
+    factor      go to state 50
+
+
+State 92
+
+   92 cmp_expr: cmp_expr GEQ . add_expr
+
+    LPAREN  shift, and go to state 16
+    PLUS    shift, and go to state 17
+    MINUS   shift, and go to state 18
+    TIMES   shift, and go to state 19
+    INC     shift, and go to state 20
+    DEC     shift, and go to state 21
+    NOT     shift, and go to state 22
+    ADDR    shift, and go to state 23
+    ID      shift, and go to state 27
+    LIT     shift, and go to state 28
+
+    add_expr    go to state 137
+    multi_expr  go to state 45
+    unary_expr  go to state 46
+    pre_expr    go to state 47
+    post_expr   go to state 48
+    term        go to state 49
+    factor      go to state 50
+
+
+State 93
+
+   87 cmp_expr: cmp_expr EQ . add_expr
+
+    LPAREN  shift, and go to state 16
+    PLUS    shift, and go to state 17
+    MINUS   shift, and go to state 18
+    TIMES   shift, and go to state 19
+    INC     shift, and go to state 20
+    DEC     shift, and go to state 21
+    NOT     shift, and go to state 22
+    ADDR    shift, and go to state 23
+    ID      shift, and go to state 27
+    LIT     shift, and go to state 28
+
+    add_expr    go to state 138
+    multi_expr  go to state 45
+    unary_expr  go to state 46
+    pre_expr    go to state 47
+    post_expr   go to state 48
+    term        go to state 49
+    factor      go to state 50
+
+
+State 94
+
+   88 cmp_expr: cmp_expr NEQ . add_expr
+
+    LPAREN  shift, and go to state 16
+    PLUS    shift, and go to state 17
+    MINUS   shift, and go to state 18
+    TIMES   shift, and go to state 19
+    INC     shift, and go to state 20
+    DEC     shift, and go to state 21
+    NOT     shift, and go to state 22
+    ADDR    shift, and go to state 23
+    ID      shift, and go to state 27
+    LIT     shift, and go to state 28
+
+    add_expr    go to state 139
+    multi_expr  go to state 45
+    unary_expr  go to state 46
+    pre_expr    go to state 47
+    post_expr   go to state 48
+    term        go to state 49
+    factor      go to state 50
+
+
+State 95
+
+   94 add_expr: add_expr PLUS . multi_expr
+
+    LPAREN  shift, and go to state 16
+    PLUS    shift, and go to state 17
+    MINUS   shift, and go to state 18
+    TIMES   shift, and go to state 19
+    INC     shift, and go to state 20
+    DEC     shift, and go to state 21
+    NOT     shift, and go to state 22
+    ADDR    shift, and go to state 23
+    ID      shift, and go to state 27
+    LIT     shift, and go to state 28
+
+    multi_expr  go to state 140
+    unary_expr  go to state 46
+    pre_expr    go to state 47
+    post_expr   go to state 48
+    term        go to state 49
+    factor      go to state 50
+
+
+State 96
+
+   95 add_expr: add_expr MINUS . multi_expr
+
+    LPAREN  shift, and go to state 16
+    PLUS    shift, and go to state 17
+    MINUS   shift, and go to state 18
+    TIMES   shift, and go to state 19
+    INC     shift, and go to state 20
+    DEC     shift, and go to state 21
+    NOT     shift, and go to state 22
+    ADDR    shift, and go to state 23
+    ID      shift, and go to state 27
+    LIT     shift, and go to state 28
+
+    multi_expr  go to state 141
+    unary_expr  go to state 46
+    pre_expr    go to state 47
+    post_expr   go to state 48
+    term        go to state 49
+    factor      go to state 50
+
+
+State 97
+
+   97 multi_expr: multi_expr TIMES . unary_expr
+
+    LPAREN  shift, and go to state 16
+    PLUS    shift, and go to state 17
+    MINUS   shift, and go to state 18
+    TIMES   shift, and go to state 19
+    INC     shift, and go to state 20
+    DEC     shift, and go to state 21
+    NOT     shift, and go to state 22
+    ADDR    shift, and go to state 23
+    ID      shift, and go to state 27
+    LIT     shift, and go to state 28
+
+    unary_expr  go to state 142
+    pre_expr    go to state 47
+    post_expr   go to state 48
+    term        go to state 49
+    factor      go to state 50
+
+
+State 98
+
+   98 multi_expr: multi_expr SLASH . unary_expr
+
+    LPAREN  shift, and go to state 16
+    PLUS    shift, and go to state 17
+    MINUS   shift, and go to state 18
+    TIMES   shift, and go to state 19
+    INC     shift, and go to state 20
+    DEC     shift, and go to state 21
+    NOT     shift, and go to state 22
+    ADDR    shift, and go to state 23
+    ID      shift, and go to state 27
+    LIT     shift, and go to state 28
+
+    unary_expr  go to state 143
+    pre_expr    go to state 47
+    post_expr   go to state 48
+    term        go to state 49
+    factor      go to state 50
+
+
+State 99
+
+   99 multi_expr: multi_expr MOD . unary_expr
+
+    LPAREN  shift, and go to state 16
+    PLUS    shift, and go to state 17
+    MINUS   shift, and go to state 18
+    TIMES   shift, and go to state 19
+    INC     shift, and go to state 20
+    DEC     shift, and go to state 21
+    NOT     shift, and go to state 22
+    ADDR    shift, and go to state 23
+    ID      shift, and go to state 27
+    LIT     shift, and go to state 28
+
+    unary_expr  go to state 144
+    pre_expr    go to state 47
+    post_expr   go to state 48
+    term        go to state 49
+    factor      go to state 50
+
+
+State 100
+
+  108 post_expr: post_expr INC .
+
+    $default  reduce using rule 108 (post_expr)
+
+
+State 101
+
+  109 post_expr: post_expr DEC .
+
+    $default  reduce using rule 109 (post_expr)
+
+
+State 102
+
+   62 if_part_ifthen: IFSYM LPAREN condition . RPAREN THENSYM @15 LBRACE stmt_list RBRACE
+
+    RPAREN  shift, and go to state 145
+
+
+State 103
+
+   56 condition: expr .
+   83 expr: expr . OR and_expr
+
+    OR  shift, and go to state 86
+
+    $default  reduce using rule 56 (condition)
+
+
+State 104
+
+   67 for_expr: expr_stmt .
+
+    $default  reduce using rule 67 (for_expr)
+
+
+State 105
+
+   68 for_expr: for_expr . COMMA expr_stmt
+   70 for_substmt: for_expr .
+
+    COMMA  shift, and go to state 146
+
+    $default  reduce using rule 70 (for_substmt)
+
+
+State 106
+
+   73 for_stmt: FORSYM LPAREN for_substmt . SEMICOLON @18 condition SEMICOLON @19 rec_cbuf_pc for_substmt RPAREN rec_cbuf_pc LBRACE stmt_list RBRACE
+
+    SEMICOLON  shift, and go to state 147
+
+
+State 107
+
+   66 while_stmt: WHILESYM @16 LPAREN . condition RPAREN @17 LBRACE stmt_list RBRACE
+
+    LPAREN  shift, and go to state 16
+    PLUS    shift, and go to state 17
+    MINUS   shift, and go to state 18
+    TIMES   shift, and go to state 19
+    INC     shift, and go to state 20
+    DEC     shift, and go to state 21
+    NOT     shift, and go to state 22
+    ADDR    shift, and go to state 23
+    ID      shift, and go to state 27
+    LIT     shift, and go to state 28
+
+    condition   go to state 148
+    expr        go to state 103
+    and_expr    go to state 42
+    cmp_expr    go to state 43
+    add_expr    go to state 44
+    multi_expr  go to state 45
+    unary_expr  go to state 46
+    pre_expr    go to state 47
+    post_expr   go to state 48
+    term        go to state 49
+    factor      go to state 50
+
+
+State 108
+
+   78 print_list: print_item .
+
+    $default  reduce using rule 78 (print_list)
+
+
+State 109
+
+   79 print_list: print_list . COMMA print_item
+   81 print_stmt: PRINTSYM LPAREN print_list . RPAREN
+
+    COMMA   shift, and go to state 149
+    RPAREN  shift, and go to state 150
+
+
+State 110
+
+   75 print_item: expr .
+   83 expr: expr . OR and_expr
+
+    OR  shift, and go to state 86
+
+    $default  reduce using rule 75 (print_item)
+
+
+State 111
+
+   76 scan_list: scan_item .
+
+    $default  reduce using rule 76 (scan_list)
+
+
+State 112
+
+   77 scan_list: scan_list . COMMA scan_item
+   80 scan_stmt: SCANSYM LPAREN scan_list . RPAREN
+
+    COMMA   shift, and go to state 151
+    RPAREN  shift, and go to state 152
+
+
+State 113
+
+   74 scan_item: expr .
+   83 expr: expr . OR and_expr
+
+    OR  shift, and go to state 86
+
+    $default  reduce using rule 74 (scan_item)
+
+
+State 114
+
+  113 factor: LPAREN expr RPAREN .
+
+    $default  reduce using rule 113 (factor)
+
+
+State 115
+
+   48 arr_idx: LBRACKET expr . RBRACKET
+   83 expr: expr . OR and_expr
+
+    RBRACKET  shift, and go to state 153
+    OR        shift, and go to state 86
+
+
+State 116
+
+  117 factor: ID LPAREN $@20 . arg_list RPAREN
+
+    LPAREN  shift, and go to state 16
+    PLUS    shift, and go to state 17
+    MINUS   shift, and go to state 18
+    TIMES   shift, and go to state 19
+    INC     shift, and go to state 20
+    DEC     shift, and go to state 21
+    NOT     shift, and go to state 22
+    ADDR    shift, and go to state 23
+    ID      shift, and go to state 27
+    LIT     shift, and go to state 28
+
+    arg_list    go to state 154
+    expr        go to state 155
+    and_expr    go to state 42
+    cmp_expr    go to state 43
+    add_expr    go to state 44
+    multi_expr  go to state 45
+    unary_expr  go to state 46
+    pre_expr    go to state 47
+    post_expr   go to state 48
+    term        go to state 49
+    factor      go to state 50
+
+
+State 117
+
+  119 factor: ID LPAREN $@21 . RPAREN
+
+    RPAREN  shift, and go to state 156
+
+
+State 118
+
+   49 arr_idx: arr_idx LBRACKET . expr RBRACKET
+
+    LPAREN  shift, and go to state 16
+    PLUS    shift, and go to state 17
+    MINUS   shift, and go to state 18
+    TIMES   shift, and go to state 19
+    INC     shift, and go to state 20
+    DEC     shift, and go to state 21
+    NOT     shift, and go to state 22
+    ADDR    shift, and go to state 23
+    ID      shift, and go to state 27
+    LIT     shift, and go to state 28
+
+    expr        go to state 157
+    and_expr    go to state 42
+    cmp_expr    go to state 43
+    add_expr    go to state 44
+    multi_expr  go to state 45
+    unary_expr  go to state 46
+    pre_expr    go to state 47
+    post_expr   go to state 48
+    term        go to state 49
+    factor      go to state 50
+
+
+State 119
+
+   20 stmt: ret_stmt $@5 error . SEMICOLON
+
+    SEMICOLON  shift, and go to state 158
+
+
+State 120
+
+   46 arr_dim: LBRACKET . LIT RBRACKET
+
+    LIT  shift, and go to state 159
+
+
+State 121
+
+   40 declarator: ID arr_dim .
+   47 arr_dim: arr_dim . LBRACKET LIT RBRACKET
+
+    LBRACKET  shift, and go to state 160
+
+    $default  reduce using rule 40 (declarator)
+
+
+State 122
+
+   45 decl_stmt: type_spec declarator $@10 . @11 proc end_block $@12
+
+    $default  reduce using rule 43 (@11)
+
+    @11  go to state 161
+
+
+State 123
+
+   35 pointer: pointer TIMES .
+
+    $default  reduce using rule 35 (pointer)
+
+
+State 124
+
+   14 stmt: decl_stmt $@2 error . SEMICOLON
+
+    SEMICOLON  shift, and go to state 162
+
+
+State 125
+
+   16 stmt: expr_stmt $@3 error . SEMICOLON
+
+    SEMICOLON  shift, and go to state 163
+
+
+State 126
+
+   18 stmt: if_stmt $@4 error . SEMICOLON
+
+    SEMICOLON  shift, and go to state 164
+
+
+State 127
+
+   63 if_part_else: ELSESYM . LBRACE stmt_list RBRACE
+
+    LBRACE  shift, and go to state 165
+
+
+State 128
+
+   60 if_stmt: if_part_ifthen @13 if_part_else . $@14 ENDSYM
+
+    $default  reduce using rule 59 ($@14)
+
+    $@14  go to state 166
+
+
+State 129
+
+   22 stmt: scan_stmt $@6 error . SEMICOLON
+
+    SEMICOLON  shift, and go to state 167
+
+
+State 130
+
+   24 stmt: print_stmt $@7 error . SEMICOLON
+
+    SEMICOLON  shift, and go to state 168
+
+
+State 131
+
+   83 expr: expr OR and_expr .
+   85 and_expr: and_expr . AND cmp_expr
+
+    AND  shift, and go to state 88
+
+    $default  reduce using rule 83 (expr)
+
+
+State 132
+
+   54 expr_stmt: expr BECOMES expr .
+   83 expr: expr . OR and_expr
+
+    OR  shift, and go to state 86
+
+    $default  reduce using rule 54 (expr_stmt)
+
+
+State 133
+
+   85 and_expr: and_expr AND cmp_expr .
+   87 cmp_expr: cmp_expr . EQ add_expr
+   88         | cmp_expr . NEQ add_expr
+   89         | cmp_expr . LSS add_expr
+   90         | cmp_expr . LEQ add_expr
+   91         | cmp_expr . GTR add_expr
+   92         | cmp_expr . GEQ add_expr
+
+    LSS  shift, and go to state 89
+    LEQ  shift, and go to state 90
+    GTR  shift, and go to state 91
+    GEQ  shift, and go to state 92
+    EQ   shift, and go to state 93
+    NEQ  shift, and go to state 94
+
+    $default  reduce using rule 85 (and_expr)
+
+
+State 134
+
+   89 cmp_expr: cmp_expr LSS add_expr .
+   94 add_expr: add_expr . PLUS multi_expr
+   95         | add_expr . MINUS multi_expr
+
+    PLUS   shift, and go to state 95
+    MINUS  shift, and go to state 96
+
+    $default  reduce using rule 89 (cmp_expr)
+
+
+State 135
+
+   90 cmp_expr: cmp_expr LEQ add_expr .
+   94 add_expr: add_expr . PLUS multi_expr
+   95         | add_expr . MINUS multi_expr
+
+    PLUS   shift, and go to state 95
+    MINUS  shift, and go to state 96
+
+    $default  reduce using rule 90 (cmp_expr)
+
+
+State 136
+
+   91 cmp_expr: cmp_expr GTR add_expr .
+   94 add_expr: add_expr . PLUS multi_expr
+   95         | add_expr . MINUS multi_expr
+
+    PLUS   shift, and go to state 95
+    MINUS  shift, and go to state 96
+
+    $default  reduce using rule 91 (cmp_expr)
+
+
+State 137
+
+   92 cmp_expr: cmp_expr GEQ add_expr .
+   94 add_expr: add_expr . PLUS multi_expr
+   95         | add_expr . MINUS multi_expr
+
+    PLUS   shift, and go to state 95
+    MINUS  shift, and go to state 96
+
+    $default  reduce using rule 92 (cmp_expr)
+
+
+State 138
+
+   87 cmp_expr: cmp_expr EQ add_expr .
+   94 add_expr: add_expr . PLUS multi_expr
+   95         | add_expr . MINUS multi_expr
+
+    PLUS   shift, and go to state 95
+    MINUS  shift, and go to state 96
+
+    $default  reduce using rule 87 (cmp_expr)
+
+
+State 139
+
+   88 cmp_expr: cmp_expr NEQ add_expr .
+   94 add_expr: add_expr . PLUS multi_expr
+   95         | add_expr . MINUS multi_expr
+
+    PLUS   shift, and go to state 95
+    MINUS  shift, and go to state 96
+
+    $default  reduce using rule 88 (cmp_expr)
+
+
+State 140
+
+   94 add_expr: add_expr PLUS multi_expr .
+   97 multi_expr: multi_expr . TIMES unary_expr
+   98           | multi_expr . SLASH unary_expr
+   99           | multi_expr . MOD unary_expr
+
+    TIMES  shift, and go to state 97
+    SLASH  shift, and go to state 98
+    MOD    shift, and go to state 99
+
+    $default  reduce using rule 94 (add_expr)
+
+
+State 141
+
+   95 add_expr: add_expr MINUS multi_expr .
+   97 multi_expr: multi_expr . TIMES unary_expr
+   98           | multi_expr . SLASH unary_expr
+   99           | multi_expr . MOD unary_expr
+
+    TIMES  shift, and go to state 97
+    SLASH  shift, and go to state 98
+    MOD    shift, and go to state 99
+
+    $default  reduce using rule 95 (add_expr)
+
+
+State 142
+
+   97 multi_expr: multi_expr TIMES unary_expr .
+
+    $default  reduce using rule 97 (multi_expr)
+
+
+State 143
+
+   98 multi_expr: multi_expr SLASH unary_expr .
+
+    $default  reduce using rule 98 (multi_expr)
+
+
+State 144
+
+   99 multi_expr: multi_expr MOD unary_expr .
+
+    $default  reduce using rule 99 (multi_expr)
+
+
+State 145
+
+   62 if_part_ifthen: IFSYM LPAREN condition RPAREN . THENSYM @15 LBRACE stmt_list RBRACE
+
+    THENSYM  shift, and go to state 169
+
+
+State 146
+
+   68 for_expr: for_expr COMMA . expr_stmt
+
+    LPAREN  shift, and go to state 16
+    PLUS    shift, and go to state 17
+    MINUS   shift, and go to state 18
+    TIMES   shift, and go to state 19
+    INC     shift, and go to state 20
+    DEC     shift, and go to state 21
+    NOT     shift, and go to state 22
+    ADDR    shift, and go to state 23
+    ID      shift, and go to state 27
+    LIT     shift, and go to state 28
+
+    expr_stmt   go to state 170
+    expr        go to state 41
+    and_expr    go to state 42
+    cmp_expr    go to state 43
+    add_expr    go to state 44
+    multi_expr  go to state 45
+    unary_expr  go to state 46
+    pre_expr    go to state 47
+    post_expr   go to state 48
+    term        go to state 49
+    factor      go to state 50
+
+
+State 147
+
+   73 for_stmt: FORSYM LPAREN for_substmt SEMICOLON . @18 condition SEMICOLON @19 rec_cbuf_pc for_substmt RPAREN rec_cbuf_pc LBRACE stmt_list RBRACE
+
+    $default  reduce using rule 71 (@18)
+
+    @18  go to state 171
+
+
+State 148
+
+   66 while_stmt: WHILESYM @16 LPAREN condition . RPAREN @17 LBRACE stmt_list RBRACE
+
+    RPAREN  shift, and go to state 172
+
+
+State 149
+
+   79 print_list: print_list COMMA . print_item
+
+    LPAREN  shift, and go to state 16
+    PLUS    shift, and go to state 17
+    MINUS   shift, and go to state 18
+    TIMES   shift, and go to state 19
+    INC     shift, and go to state 20
+    DEC     shift, and go to state 21
+    NOT     shift, and go to state 22
+    ADDR    shift, and go to state 23
+    ID      shift, and go to state 27
+    LIT     shift, and go to state 28
+
+    print_item  go to state 173
+    expr        go to state 110
+    and_expr    go to state 42
+    cmp_expr    go to state 43
+    add_expr    go to state 44
+    multi_expr  go to state 45
+    unary_expr  go to state 46
+    pre_expr    go to state 47
+    post_expr   go to state 48
+    term        go to state 49
+    factor      go to state 50
+
+
+State 150
+
+   81 print_stmt: PRINTSYM LPAREN print_list RPAREN .
+
+    $default  reduce using rule 81 (print_stmt)
+
+
+State 151
+
+   77 scan_list: scan_list COMMA . scan_item
+
+    LPAREN  shift, and go to state 16
+    PLUS    shift, and go to state 17
+    MINUS   shift, and go to state 18
+    TIMES   shift, and go to state 19
+    INC     shift, and go to state 20
+    DEC     shift, and go to state 21
+    NOT     shift, and go to state 22
+    ADDR    shift, and go to state 23
+    ID      shift, and go to state 27
+    LIT     shift, and go to state 28
+
+    scan_item   go to state 174
+    expr        go to state 113
+    and_expr    go to state 42
+    cmp_expr    go to state 43
+    add_expr    go to state 44
+    multi_expr  go to state 45
+    unary_expr  go to state 46
+    pre_expr    go to state 47
+    post_expr   go to state 48
+    term        go to state 49
+    factor      go to state 50
+
+
+State 152
+
+   80 scan_stmt: SCANSYM LPAREN scan_list RPAREN .
+
+    $default  reduce using rule 80 (scan_stmt)
+
+
+State 153
+
+   48 arr_idx: LBRACKET expr RBRACKET .
+
+    $default  reduce using rule 48 (arr_idx)
+
+
+State 154
+
+   53 arg_list: arg_list . COMMA expr
+  117 factor: ID LPAREN $@20 arg_list . RPAREN
+
+    COMMA   shift, and go to state 175
+    RPAREN  shift, and go to state 176
+
+
+State 155
+
+   52 arg_list: expr .
+   83 expr: expr . OR and_expr
+
+    OR  shift, and go to state 86
+
+    $default  reduce using rule 52 (arg_list)
+
+
+State 156
+
+  119 factor: ID LPAREN $@21 RPAREN .
+
+    $default  reduce using rule 119 (factor)
+
+
+State 157
+
+   49 arr_idx: arr_idx LBRACKET expr . RBRACKET
+   83 expr: expr . OR and_expr
+
+    RBRACKET  shift, and go to state 177
+    OR        shift, and go to state 86
+
+
+State 158
+
+   20 stmt: ret_stmt $@5 error SEMICOLON .
+
+    $default  reduce using rule 20 (stmt)
+
+
+State 159
+
+   46 arr_dim: LBRACKET LIT . RBRACKET
+
+    RBRACKET  shift, and go to state 178
+
+
+State 160
+
+   47 arr_dim: arr_dim LBRACKET . LIT RBRACKET
+
+    LIT  shift, and go to state 179
+
+
+State 161
+
+   45 decl_stmt: type_spec declarator $@10 @11 . proc end_block $@12
+
+    LPAREN  shift, and go to state 180
+
+    proc  go to state 181
+
+
+State 162
+
+   14 stmt: decl_stmt $@2 error SEMICOLON .
+
+    $default  reduce using rule 14 (stmt)
+
+
+State 163
+
+   16 stmt: expr_stmt $@3 error SEMICOLON .
+
+    $default  reduce using rule 16 (stmt)
+
+
+State 164
+
+   18 stmt: if_stmt $@4 error SEMICOLON .
+
+    $default  reduce using rule 18 (stmt)
+
+
+State 165
+
+   63 if_part_else: ELSESYM LBRACE . stmt_list RBRACE
+
+    $default  reduce using rule 3 (stmt_list)
+
+    stmt_list  go to state 182
+
+
+State 166
+
+   60 if_stmt: if_part_ifthen @13 if_part_else $@14 . ENDSYM
+
+    ENDSYM  shift, and go to state 183
+
+
+State 167
+
+   22 stmt: scan_stmt $@6 error SEMICOLON .
+
+    $default  reduce using rule 22 (stmt)
+
+
+State 168
+
+   24 stmt: print_stmt $@7 error SEMICOLON .
+
+    $default  reduce using rule 24 (stmt)
+
+
+State 169
+
+   62 if_part_ifthen: IFSYM LPAREN condition RPAREN THENSYM . @15 LBRACE stmt_list RBRACE
+
+    $default  reduce using rule 61 (@15)
+
+    @15  go to state 184
+
+
+State 170
+
+   68 for_expr: for_expr COMMA expr_stmt .
+
+    $default  reduce using rule 68 (for_expr)
+
+
+State 171
+
+   73 for_stmt: FORSYM LPAREN for_substmt SEMICOLON @18 . condition SEMICOLON @19 rec_cbuf_pc for_substmt RPAREN rec_cbuf_pc LBRACE stmt_list RBRACE
+
+    LPAREN  shift, and go to state 16
+    PLUS    shift, and go to state 17
+    MINUS   shift, and go to state 18
+    TIMES   shift, and go to state 19
+    INC     shift, and go to state 20
+    DEC     shift, and go to state 21
+    NOT     shift, and go to state 22
+    ADDR    shift, and go to state 23
+    ID      shift, and go to state 27
+    LIT     shift, and go to state 28
+
+    condition   go to state 185
+    expr        go to state 103
+    and_expr    go to state 42
+    cmp_expr    go to state 43
+    add_expr    go to state 44
+    multi_expr  go to state 45
+    unary_expr  go to state 46
+    pre_expr    go to state 47
+    post_expr   go to state 48
+    term        go to state 49
+    factor      go to state 50
+
+
+State 172
+
+   66 while_stmt: WHILESYM @16 LPAREN condition RPAREN . @17 LBRACE stmt_list RBRACE
+
+    $default  reduce using rule 65 (@17)
+
+    @17  go to state 186
+
+
+State 173
+
+   79 print_list: print_list COMMA print_item .
+
+    $default  reduce using rule 79 (print_list)
+
+
+State 174
+
+   77 scan_list: scan_list COMMA scan_item .
+
+    $default  reduce using rule 77 (scan_list)
+
+
+State 175
+
+   53 arg_list: arg_list COMMA . expr
+
+    LPAREN  shift, and go to state 16
+    PLUS    shift, and go to state 17
+    MINUS   shift, and go to state 18
+    TIMES   shift, and go to state 19
+    INC     shift, and go to state 20
+    DEC     shift, and go to state 21
+    NOT     shift, and go to state 22
+    ADDR    shift, and go to state 23
+    ID      shift, and go to state 27
+    LIT     shift, and go to state 28
+
+    expr        go to state 187
+    and_expr    go to state 42
+    cmp_expr    go to state 43
+    add_expr    go to state 44
+    multi_expr  go to state 45
+    unary_expr  go to state 46
+    pre_expr    go to state 47
+    post_expr   go to state 48
+    term        go to state 49
+    factor      go to state 50
+
+
+State 176
+
+  117 factor: ID LPAREN $@20 arg_list RPAREN .
+
+    $default  reduce using rule 117 (factor)
+
+
+State 177
+
+   49 arr_idx: arr_idx LBRACKET expr RBRACKET .
+
+    $default  reduce using rule 49 (arr_idx)
+
+
+State 178
+
+   46 arr_dim: LBRACKET LIT RBRACKET .
+
+    $default  reduce using rule 46 (arr_dim)
+
+
+State 179
+
+   47 arr_dim: arr_dim LBRACKET LIT . RBRACKET
+
+    RBRACKET  shift, and go to state 188
+
+
+State 180
+
+   27 proc: LPAREN . load_params param_list load_params RPAREN $@8 rec_cbuf_pc LBRACE stmt_list RBRACE
+   29     | LPAREN . RPAREN $@9 rec_cbuf_pc LBRACE stmt_list RBRACE
+
+    RPAREN  shift, and go to state 189
+
+    $default  reduce using rule 122 (load_params)
+
+    load_params  go to state 190
+
+
+State 181
+
+   45 decl_stmt: type_spec declarator $@10 @11 proc . end_block $@12
+
+    $default  reduce using rule 31 (end_block)
+
+    end_block  go to state 191
+
+
+State 182
+
+    4 stmt_list: stmt_list . stmt
+   63 if_part_else: ELSESYM LBRACE stmt_list . RBRACE
+
+    IFSYM      shift, and go to state 8
+    FORSYM     shift, and go to state 9
+    WHILESYM   shift, and go to state 10
+    PRINTSYM   shift, and go to state 11
+    SCANSYM    shift, and go to state 12
+    RETSYM     shift, and go to state 13
+    RBRACE     shift, and go to state 192
+    SEMICOLON  shift, and go to state 15
+    LPAREN     shift, and go to state 16
+    PLUS       shift, and go to state 17
+    MINUS      shift, and go to state 18
+    TIMES      shift, and go to state 19
+    INC        shift, and go to state 20
+    DEC        shift, and go to state 21
+    NOT        shift, and go to state 22
+    ADDR       shift, and go to state 23
+    INTSYM     shift, and go to state 24
+    STRSYM     shift, and go to state 25
+    BOOLSYM    shift, and go to state 26
+    ID         shift, and go to state 27
+    LIT        shift, and go to state 28
+
+    stmt            go to state 29
+    ret_stmt        go to state 30
+    type_spec       go to state 31
+    type            go to state 32
+    decl_stmt       go to state 33
+    expr_stmt       go to state 34
+    if_stmt         go to state 35
+    if_part_ifthen  go to state 36
+    while_stmt      go to state 37
+    for_stmt        go to state 38
+    scan_stmt       go to state 39
+    print_stmt      go to state 40
+    expr            go to state 41
+    and_expr        go to state 42
+    cmp_expr        go to state 43
+    add_expr        go to state 44
+    multi_expr      go to state 45
+    unary_expr      go to state 46
+    pre_expr        go to state 47
+    post_expr       go to state 48
+    term            go to state 49
+    factor          go to state 50
+
+
+State 183
+
+   60 if_stmt: if_part_ifthen @13 if_part_else $@14 ENDSYM .
+
+    $default  reduce using rule 60 (if_stmt)
+
+
+State 184
+
+   62 if_part_ifthen: IFSYM LPAREN condition RPAREN THENSYM @15 . LBRACE stmt_list RBRACE
+
+    LBRACE  shift, and go to state 193
+
+
+State 185
+
+   73 for_stmt: FORSYM LPAREN for_substmt SEMICOLON @18 condition . SEMICOLON @19 rec_cbuf_pc for_substmt RPAREN rec_cbuf_pc LBRACE stmt_list RBRACE
+
+    SEMICOLON  shift, and go to state 194
+
+
+State 186
+
+   66 while_stmt: WHILESYM @16 LPAREN condition RPAREN @17 . LBRACE stmt_list RBRACE
+
+    LBRACE  shift, and go to state 195
+
+
+State 187
+
+   53 arg_list: arg_list COMMA expr .
+   83 expr: expr . OR and_expr
+
+    OR  shift, and go to state 86
+
+    $default  reduce using rule 53 (arg_list)
+
+
+State 188
+
+   47 arr_dim: arr_dim LBRACKET LIT RBRACKET .
+
+    $default  reduce using rule 47 (arr_dim)
+
+
+State 189
+
+   29 proc: LPAREN RPAREN . $@9 rec_cbuf_pc LBRACE stmt_list RBRACE
+
+    $default  reduce using rule 28 ($@9)
+
+    $@9  go to state 196
+
+
+State 190
+
+   27 proc: LPAREN load_params . param_list load_params RPAREN $@8 rec_cbuf_pc LBRACE stmt_list RBRACE
+
+    INTSYM   shift, and go to state 24
+    STRSYM   shift, and go to state 25
+    BOOLSYM  shift, and go to state 26
+
+    type_spec   go to state 31
+    type        go to state 32
+    decl_stmt   go to state 197
+    param_list  go to state 198
+
+
+State 191
+
+   45 decl_stmt: type_spec declarator $@10 @11 proc end_block . $@12
+
+    $default  reduce using rule 44 ($@12)
+
+    $@12  go to state 199
+
+
+State 192
+
+   63 if_part_else: ELSESYM LBRACE stmt_list RBRACE .
+
+    $default  reduce using rule 63 (if_part_else)
+
+
+State 193
+
+   62 if_part_ifthen: IFSYM LPAREN condition RPAREN THENSYM @15 LBRACE . stmt_list RBRACE
+
+    $default  reduce using rule 3 (stmt_list)
+
+    stmt_list  go to state 200
+
+
+State 194
+
+   73 for_stmt: FORSYM LPAREN for_substmt SEMICOLON @18 condition SEMICOLON . @19 rec_cbuf_pc for_substmt RPAREN rec_cbuf_pc LBRACE stmt_list RBRACE
+
+    $default  reduce using rule 72 (@19)
+
+    @19  go to state 201
+
+
+State 195
+
+   66 while_stmt: WHILESYM @16 LPAREN condition RPAREN @17 LBRACE . stmt_list RBRACE
+
+    $default  reduce using rule 3 (stmt_list)
+
+    stmt_list  go to state 202
+
+
+State 196
+
+   29 proc: LPAREN RPAREN $@9 . rec_cbuf_pc LBRACE stmt_list RBRACE
+
+    $default  reduce using rule 121 (rec_cbuf_pc)
+
+    rec_cbuf_pc  go to state 203
+
+
+State 197
+
+   50 param_list: decl_stmt .
+
+    $default  reduce using rule 50 (param_list)
+
+
+State 198
+
+   27 proc: LPAREN load_params param_list . load_params RPAREN $@8 rec_cbuf_pc LBRACE stmt_list RBRACE
+   51 param_list: param_list . COMMA decl_stmt
+
+    COMMA  shift, and go to state 204
+
+    $default  reduce using rule 122 (load_params)
+
+    load_params  go to state 205
+
+
+State 199
+
+   45 decl_stmt: type_spec declarator $@10 @11 proc end_block $@12 .
+
+    $default  reduce using rule 45 (decl_stmt)
+
+
+State 200
+
+    4 stmt_list: stmt_list . stmt
+   62 if_part_ifthen: IFSYM LPAREN condition RPAREN THENSYM @15 LBRACE stmt_list . RBRACE
+
+    IFSYM      shift, and go to state 8
+    FORSYM     shift, and go to state 9
+    WHILESYM   shift, and go to state 10
+    PRINTSYM   shift, and go to state 11
+    SCANSYM    shift, and go to state 12
+    RETSYM     shift, and go to state 13
+    RBRACE     shift, and go to state 206
+    SEMICOLON  shift, and go to state 15
+    LPAREN     shift, and go to state 16
+    PLUS       shift, and go to state 17
+    MINUS      shift, and go to state 18
+    TIMES      shift, and go to state 19
+    INC        shift, and go to state 20
+    DEC        shift, and go to state 21
+    NOT        shift, and go to state 22
+    ADDR       shift, and go to state 23
+    INTSYM     shift, and go to state 24
+    STRSYM     shift, and go to state 25
+    BOOLSYM    shift, and go to state 26
+    ID         shift, and go to state 27
+    LIT        shift, and go to state 28
+
+    stmt            go to state 29
+    ret_stmt        go to state 30
+    type_spec       go to state 31
+    type            go to state 32
+    decl_stmt       go to state 33
+    expr_stmt       go to state 34
+    if_stmt         go to state 35
+    if_part_ifthen  go to state 36
+    while_stmt      go to state 37
+    for_stmt        go to state 38
+    scan_stmt       go to state 39
+    print_stmt      go to state 40
+    expr            go to state 41
+    and_expr        go to state 42
+    cmp_expr        go to state 43
+    add_expr        go to state 44
+    multi_expr      go to state 45
+    unary_expr      go to state 46
+    pre_expr        go to state 47
+    post_expr       go to state 48
+    term            go to state 49
+    factor          go to state 50
+
+
+State 201
+
+   73 for_stmt: FORSYM LPAREN for_substmt SEMICOLON @18 condition SEMICOLON @19 . rec_cbuf_pc for_substmt RPAREN rec_cbuf_pc LBRACE stmt_list RBRACE
+
+    $default  reduce using rule 121 (rec_cbuf_pc)
+
+    rec_cbuf_pc  go to state 207
+
+
+State 202
+
+    4 stmt_list: stmt_list . stmt
+   66 while_stmt: WHILESYM @16 LPAREN condition RPAREN @17 LBRACE stmt_list . RBRACE
+
+    IFSYM      shift, and go to state 8
+    FORSYM     shift, and go to state 9
+    WHILESYM   shift, and go to state 10
+    PRINTSYM   shift, and go to state 11
+    SCANSYM    shift, and go to state 12
+    RETSYM     shift, and go to state 13
+    RBRACE     shift, and go to state 208
+    SEMICOLON  shift, and go to state 15
+    LPAREN     shift, and go to state 16
+    PLUS       shift, and go to state 17
+    MINUS      shift, and go to state 18
+    TIMES      shift, and go to state 19
+    INC        shift, and go to state 20
+    DEC        shift, and go to state 21
+    NOT        shift, and go to state 22
+    ADDR       shift, and go to state 23
+    INTSYM     shift, and go to state 24
+    STRSYM     shift, and go to state 25
+    BOOLSYM    shift, and go to state 26
+    ID         shift, and go to state 27
+    LIT        shift, and go to state 28
+
+    stmt            go to state 29
+    ret_stmt        go to state 30
+    type_spec       go to state 31
+    type            go to state 32
+    decl_stmt       go to state 33
+    expr_stmt       go to state 34
+    if_stmt         go to state 35
+    if_part_ifthen  go to state 36
+    while_stmt      go to state 37
+    for_stmt        go to state 38
+    scan_stmt       go to state 39
+    print_stmt      go to state 40
+    expr            go to state 41
+    and_expr        go to state 42
+    cmp_expr        go to state 43
+    add_expr        go to state 44
+    multi_expr      go to state 45
+    unary_expr      go to state 46
+    pre_expr        go to state 47
+    post_expr       go to state 48
+    term            go to state 49
+    factor          go to state 50
+
+
+State 203
+
+   29 proc: LPAREN RPAREN $@9 rec_cbuf_pc . LBRACE stmt_list RBRACE
+
+    LBRACE  shift, and go to state 209
+
+
+State 204
+
+   51 param_list: param_list COMMA . decl_stmt
+
+    INTSYM   shift, and go to state 24
+    STRSYM   shift, and go to state 25
+    BOOLSYM  shift, and go to state 26
+
+    type_spec  go to state 31
+    type       go to state 32
+    decl_stmt  go to state 210
+
+
+State 205
+
+   27 proc: LPAREN load_params param_list load_params . RPAREN $@8 rec_cbuf_pc LBRACE stmt_list RBRACE
+
+    RPAREN  shift, and go to state 211
+
+
+State 206
+
+   62 if_part_ifthen: IFSYM LPAREN condition RPAREN THENSYM @15 LBRACE stmt_list RBRACE .
+
+    $default  reduce using rule 62 (if_part_ifthen)
+
+
+State 207
+
+   73 for_stmt: FORSYM LPAREN for_substmt SEMICOLON @18 condition SEMICOLON @19 rec_cbuf_pc . for_substmt RPAREN rec_cbuf_pc LBRACE stmt_list RBRACE
+
+    LPAREN  shift, and go to state 16
+    PLUS    shift, and go to state 17
+    MINUS   shift, and go to state 18
+    TIMES   shift, and go to state 19
+    INC     shift, and go to state 20
+    DEC     shift, and go to state 21
+    NOT     shift, and go to state 22
+    ADDR    shift, and go to state 23
+    ID      shift, and go to state 27
+    LIT     shift, and go to state 28
+
+    $default  reduce using rule 69 (for_substmt)
+
+    expr_stmt    go to state 104
+    for_expr     go to state 105
+    for_substmt  go to state 212
+    expr         go to state 41
+    and_expr     go to state 42
+    cmp_expr     go to state 43
+    add_expr     go to state 44
+    multi_expr   go to state 45
+    unary_expr   go to state 46
+    pre_expr     go to state 47
+    post_expr    go to state 48
+    term         go to state 49
+    factor       go to state 50
+
+
+State 208
+
+   66 while_stmt: WHILESYM @16 LPAREN condition RPAREN @17 LBRACE stmt_list RBRACE .
+
+    $default  reduce using rule 66 (while_stmt)
+
+
+State 209
+
+   29 proc: LPAREN RPAREN $@9 rec_cbuf_pc LBRACE . stmt_list RBRACE
+
+    $default  reduce using rule 3 (stmt_list)
+
+    stmt_list  go to state 213
+
+
+State 210
+
+   51 param_list: param_list COMMA decl_stmt .
+
+    $default  reduce using rule 51 (param_list)
+
+
+State 211
+
+   27 proc: LPAREN load_params param_list load_params RPAREN . $@8 rec_cbuf_pc LBRACE stmt_list RBRACE
+
+    $default  reduce using rule 26 ($@8)
+
+    $@8  go to state 214
+
+
+State 212
+
+   73 for_stmt: FORSYM LPAREN for_substmt SEMICOLON @18 condition SEMICOLON @19 rec_cbuf_pc for_substmt . RPAREN rec_cbuf_pc LBRACE stmt_list RBRACE
+
+    RPAREN  shift, and go to state 215
+
+
+State 213
+
+    4 stmt_list: stmt_list . stmt
+   29 proc: LPAREN RPAREN $@9 rec_cbuf_pc LBRACE stmt_list . RBRACE
+
+    IFSYM      shift, and go to state 8
+    FORSYM     shift, and go to state 9
+    WHILESYM   shift, and go to state 10
+    PRINTSYM   shift, and go to state 11
+    SCANSYM    shift, and go to state 12
+    RETSYM     shift, and go to state 13
+    RBRACE     shift, and go to state 216
+    SEMICOLON  shift, and go to state 15
+    LPAREN     shift, and go to state 16
+    PLUS       shift, and go to state 17
+    MINUS      shift, and go to state 18
+    TIMES      shift, and go to state 19
+    INC        shift, and go to state 20
+    DEC        shift, and go to state 21
+    NOT        shift, and go to state 22
+    ADDR       shift, and go to state 23
+    INTSYM     shift, and go to state 24
+    STRSYM     shift, and go to state 25
+    BOOLSYM    shift, and go to state 26
+    ID         shift, and go to state 27
+    LIT        shift, and go to state 28
+
+    stmt            go to state 29
+    ret_stmt        go to state 30
+    type_spec       go to state 31
+    type            go to state 32
+    decl_stmt       go to state 33
+    expr_stmt       go to state 34
+    if_stmt         go to state 35
+    if_part_ifthen  go to state 36
+    while_stmt      go to state 37
+    for_stmt        go to state 38
+    scan_stmt       go to state 39
+    print_stmt      go to state 40
+    expr            go to state 41
+    and_expr        go to state 42
+    cmp_expr        go to state 43
+    add_expr        go to state 44
+    multi_expr      go to state 45
+    unary_expr      go to state 46
+    pre_expr        go to state 47
+    post_expr       go to state 48
+    term            go to state 49
+    factor          go to state 50
+
+
+State 214
+
+   27 proc: LPAREN load_params param_list load_params RPAREN $@8 . rec_cbuf_pc LBRACE stmt_list RBRACE
+
+    $default  reduce using rule 121 (rec_cbuf_pc)
+
+    rec_cbuf_pc  go to state 217
+
+
+State 215
+
+   73 for_stmt: FORSYM LPAREN for_substmt SEMICOLON @18 condition SEMICOLON @19 rec_cbuf_pc for_substmt RPAREN . rec_cbuf_pc LBRACE stmt_list RBRACE
+
+    $default  reduce using rule 121 (rec_cbuf_pc)
+
+    rec_cbuf_pc  go to state 218
+
+
+State 216
+
+   29 proc: LPAREN RPAREN $@9 rec_cbuf_pc LBRACE stmt_list RBRACE .
+
+    $default  reduce using rule 29 (proc)
+
+
+State 217
+
+   27 proc: LPAREN load_params param_list load_params RPAREN $@8 rec_cbuf_pc . LBRACE stmt_list RBRACE
+
+    LBRACE  shift, and go to state 219
+
+
+State 218
+
+   73 for_stmt: FORSYM LPAREN for_substmt SEMICOLON @18 condition SEMICOLON @19 rec_cbuf_pc for_substmt RPAREN rec_cbuf_pc . LBRACE stmt_list RBRACE
+
+    LBRACE  shift, and go to state 220
+
+
+State 219
+
+   27 proc: LPAREN load_params param_list load_params RPAREN $@8 rec_cbuf_pc LBRACE . stmt_list RBRACE
+
+    $default  reduce using rule 3 (stmt_list)
+
+    stmt_list  go to state 221
+
+
+State 220
+
+   73 for_stmt: FORSYM LPAREN for_substmt SEMICOLON @18 condition SEMICOLON @19 rec_cbuf_pc for_substmt RPAREN rec_cbuf_pc LBRACE . stmt_list RBRACE
+
+    $default  reduce using rule 3 (stmt_list)
+
+    stmt_list  go to state 222
+
+
+State 221
+
+    4 stmt_list: stmt_list . stmt
+   27 proc: LPAREN load_params param_list load_params RPAREN $@8 rec_cbuf_pc LBRACE stmt_list . RBRACE
+
+    IFSYM      shift, and go to state 8
+    FORSYM     shift, and go to state 9
+    WHILESYM   shift, and go to state 10
+    PRINTSYM   shift, and go to state 11
+    SCANSYM    shift, and go to state 12
+    RETSYM     shift, and go to state 13
+    RBRACE     shift, and go to state 223
+    SEMICOLON  shift, and go to state 15
+    LPAREN     shift, and go to state 16
+    PLUS       shift, and go to state 17
+    MINUS      shift, and go to state 18
+    TIMES      shift, and go to state 19
+    INC        shift, and go to state 20
+    DEC        shift, and go to state 21
+    NOT        shift, and go to state 22
+    ADDR       shift, and go to state 23
+    INTSYM     shift, and go to state 24
+    STRSYM     shift, and go to state 25
+    BOOLSYM    shift, and go to state 26
+    ID         shift, and go to state 27
+    LIT        shift, and go to state 28
+
+    stmt            go to state 29
+    ret_stmt        go to state 30
+    type_spec       go to state 31
+    type            go to state 32
+    decl_stmt       go to state 33
+    expr_stmt       go to state 34
+    if_stmt         go to state 35
+    if_part_ifthen  go to state 36
+    while_stmt      go to state 37
+    for_stmt        go to state 38
+    scan_stmt       go to state 39
+    print_stmt      go to state 40
+    expr            go to state 41
+    and_expr        go to state 42
+    cmp_expr        go to state 43
+    add_expr        go to state 44
+    multi_expr      go to state 45
+    unary_expr      go to state 46
+    pre_expr        go to state 47
+    post_expr       go to state 48
+    term            go to state 49
+    factor          go to state 50
+
+
+State 222
+
+    4 stmt_list: stmt_list . stmt
+   73 for_stmt: FORSYM LPAREN for_substmt SEMICOLON @18 condition SEMICOLON @19 rec_cbuf_pc for_substmt RPAREN rec_cbuf_pc LBRACE stmt_list . RBRACE
+
+    IFSYM      shift, and go to state 8
+    FORSYM     shift, and go to state 9
+    WHILESYM   shift, and go to state 10
+    PRINTSYM   shift, and go to state 11
+    SCANSYM    shift, and go to state 12
+    RETSYM     shift, and go to state 13
+    RBRACE     shift, and go to state 224
+    SEMICOLON  shift, and go to state 15
+    LPAREN     shift, and go to state 16
+    PLUS       shift, and go to state 17
+    MINUS      shift, and go to state 18
+    TIMES      shift, and go to state 19
+    INC        shift, and go to state 20
+    DEC        shift, and go to state 21
+    NOT        shift, and go to state 22
+    ADDR       shift, and go to state 23
+    INTSYM     shift, and go to state 24
+    STRSYM     shift, and go to state 25
+    BOOLSYM    shift, and go to state 26
+    ID         shift, and go to state 27
+    LIT        shift, and go to state 28
+
+    stmt            go to state 29
+    ret_stmt        go to state 30
+    type_spec       go to state 31
+    type            go to state 32
+    decl_stmt       go to state 33
+    expr_stmt       go to state 34
+    if_stmt         go to state 35
+    if_part_ifthen  go to state 36
+    while_stmt      go to state 37
+    for_stmt        go to state 38
+    scan_stmt       go to state 39
+    print_stmt      go to state 40
+    expr            go to state 41
+    and_expr        go to state 42
+    cmp_expr        go to state 43
+    add_expr        go to state 44
+    multi_expr      go to state 45
+    unary_expr      go to state 46
+    pre_expr        go to state 47
+    post_expr       go to state 48
+    term            go to state 49
+    factor          go to state 50
+
+
+State 223
+
+   27 proc: LPAREN load_params param_list load_params RPAREN $@8 rec_cbuf_pc LBRACE stmt_list RBRACE .
+
+    $default  reduce using rule 27 (proc)
+
+
+State 224
+
+   73 for_stmt: FORSYM LPAREN for_substmt SEMICOLON @18 condition SEMICOLON @19 rec_cbuf_pc for_substmt RPAREN rec_cbuf_pc LBRACE stmt_list RBRACE .
+
+    $default  reduce using rule 73 (for_stmt)

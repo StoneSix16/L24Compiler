@@ -1506,12 +1506,12 @@ int main(int argc,char **argv) {
                 fclose(cache);
             }
             else if(cmd == 's'){
+                sprintf(cache_file, "./cache/%d.txt", cmd_cnt);
+                if((cache = fopen(cache_file, "w")) == NULL){
+                    printf("Can't open cache file!\n");
+                    exit(1);
+                }
                 if(vm_pc < vm_code_cnt) {
-                    sprintf(cache_file, "./cache/%d.txt", cmd_cnt);
-                    if((cache = fopen(cache_file, "w")) == NULL){
-                        printf("Can't open cache file!\n");
-                        exit(1);
-                    }
                     vm_step(finput, cache);
                     fclose(cache);
                 }
