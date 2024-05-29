@@ -1,0 +1,10 @@
+main{
+    print("Hello, I'm a repeater");
+    string s;
+    scan(s);
+    while(s != "q"){
+        print("Yeah," + s*3);
+        scan(s);
+    }
+    print("Bye");
+}
