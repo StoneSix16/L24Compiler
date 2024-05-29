@@ -1,0 +1,36 @@
+main{
+    int swap(int* a, int* b){
+        print("swap", a, b, *a, *b, "\n");
+        int t; t = *a; *a = *b; *b = t;
+        return 0;
+    };
+    int qsort(int* num, int l, int r){
+        print("bef", l, r, "\n");
+        if(l >= r) then{print("end\n");return -1;}end;
+        int px; px = num[l];
+        int pl; int pr; 
+        pl = l; pr = r;
+        while(pl < pr){
+            while(num[pr] >= px && pr > pl){--pr;}
+            while(num[pl] <= px && pr > pl){++pl;}
+            if(pl < pr) then {swap(&num[pl], &num[pr]);}end;
+        }
+        swap(&num[l], &num[pr]);
+        qsort(num, l, pl-1);
+        qsort(num, pl+1, r);
+        return 0;
+    };
+    int len; int i;
+    len = 5;
+    int arr[5];
+    for(i = 0; i < len; ++i){
+        scan(arr[i]);
+        print(arr[i]);
+    }
+    print("\n");
+    qsort(arr, 0, len-1);
+    for(i = 0; i < len; ++i){
+        print(arr[i]);
+    }
+    print("\n");
+}

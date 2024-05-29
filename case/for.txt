@@ -3,4 +3,5 @@ main{
     for(i = 0; i < 2; ++i){
         ret = ret + i;
     }
+    print(ret);
 }

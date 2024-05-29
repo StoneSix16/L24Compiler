@@ -1,5 +1,7 @@
 main{
     string s1
-    s1 = "hh\n\"3";
+    s1 = "\"OKOK\"";
     print(s1);
+    print(s1+4);
+    print(s1*4);
 }
