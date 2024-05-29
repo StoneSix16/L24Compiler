@@ -1,12 +1,10 @@
 main{
     int swap(int* a, int* b){
-        print("swap", a, b, *a, *b, "\n");
         int t; t = *a; *a = *b; *b = t;
         return 0;
     };
     int qsort(int* num, int l, int r){
-        print("bef", l, r, "\n");
-        if(l >= r) then{print("end\n");return -1;}end;
+        if(l >= r) then{return -1;}end;
         int px; px = num[l];
         int pl; int pr; 
         pl = l; pr = r;
