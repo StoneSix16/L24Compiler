@@ -73,27 +73,33 @@ struct table_item {
     int size; /* 存储过程占用的栈空间大小，数组大小/函数变量占用 */
 };
 
-extern table_item table[MAX_ID_TABLE_LEN]; /* 符号表 */
-extern int tbl_tail;             /* 符号表当前尾指针 */
-extern int tbl_id_addr[MAX_NEST_DEPTH]; /* 当前深度的过程的变量偏移 */
-extern char tbl_id[MAX_ID_LEN];  /* 存储编译过程中出现的标识符 */
+extern table_item table[MAX_ID_TABLE_LEN]; 
+extern int tbl_tail;
+extern int tbl_id_addr[MAX_NEST_DEPTH]; 
+extern char tbl_id[MAX_ID_LEN];
 
 type_desp* create_type_desp(int t, int shape0, int dim);
 proc_desp* create_proc_desp(args_s* param_info, type_desp* ret_type, bool isparam = false);
 arr_idx_s* create_arr_idx_s(int dim, int islval);
 expr_s* create_expr_s(type_desp* type_info, int tbl_idx);
 args_s* creat_args_s();
+
+/* 深拷贝类型 */
 type_desp* type_copy(type_desp* t);
+/* 类型比较 */
 int type_equal(type_desp* t1, type_desp* t2);
+/* 获取该类型所占的空间大小 */
 int get_type_size(type_desp* type);
 
+/* 初始化 */
 void table_init();
-void table_enter(type_desp* type, char* ident, int level, int size, int* tbl_tail); /* 在符号表中加入一个标识符 */
-int table_position(char *id, int tbl_tail); /* 在符号表中查找标识符 */
+/* 在符号表中加入一个标识符 */
+void table_enter(type_desp* type, char* ident, int level, int size, int* tbl_tail); 
+/* 从尾指针开始，在符号表中查找标识符 */
+int table_position(char *id, int tbl_tail); 
+/* 清楚当前层的符号表 */
 void table_clear(int* tbl_tail, int level);
 /* 打印类型信息 */
 void type_print(type_desp* type, FILE* ftable = stdout);
 /* 打印符号表信息 */
 void table_print(FILE* ftable = stdout); 
-// int table_arr_size(int t); /* 输出数组所占的空间，非数组为-1 */
-// int table_arr_dim(int t); /* 输出数组的维度数 */

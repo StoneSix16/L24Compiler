@@ -6,13 +6,13 @@
 char fct_str[VM_FCT_N][10] = {
     "lod", "lit", "sto", "cal", "jmp", "jpc", 
     "addr",
-    "wrt", "scn", // 输出/输入指令
-    "binop", // 算术指令， 加减乘除 
-    "unaop", // 逻辑运算指令
-    "snew", // 字符串操作指令，拼接，重复，比较
-    "reg", // 字符串操作指令，拼接，重复，比较
-    "push", // 压栈指令，用于为数组分配空间
-    "pop", // 弹出栈/偏移量栈栈顶的指令，用于翻译赋值表达式和数组寻址
+    "wrt", "scn",
+    "binop",
+    "unaop",
+    "snew",
+    "reg",
+    "push",
+    "pop", 
     "mov",
     "ret", 
 };
@@ -22,23 +22,23 @@ int vm_pc; /* 当前指令下标 */
 int vm_code_cnt; /* 虚拟机指令数量 */
 
 ins code_buf[VM_INST_MAX]; /* 暂存虚拟机代码的数组 */
-int vm_buf_pc;
-int block_pc_stack[MAX_NEST_DEPTH]; /* buffer中每个block起始位置的下标 */
+int vm_buf_pc; /* 暂存虚拟机代码的数组的尾指针 */
+int block_pc_stack[MAX_NEST_DEPTH*3]; /* buffer中每个block起始位置的下标，该数组会在分析函数和for语句时被使用，同一层不会超过3次 */
 int block_pc_top;
 
 int vm_stack[2][VM_STACK_MAX]; /* 虚拟机的栈，每个数据均占4字节；*/
-int vm_top[2];
-int p_stk;
+int vm_top[2];/* 虚拟机的栈顶指针 */
+int p_stk;/* 当前操作的栈 */
 
 object* vm_heap[VM_HEAP_MAX]; /* 虚拟机的堆，仅用于存放字符串；*/
-int vm_base, vm_tail; /* 当前过程基址，栈顶下标，堆尾*/
-char vm_strbuf[VM_STRBUF_MAX];
+int vm_base, vm_tail; /* 当前过程基址，堆尾*/
+char vm_strbuf[VM_STRBUF_MAX]; /* 输入缓冲区，用于scan */
 
 /* 初始化虚拟机 */
 void vm_init(){
     memset(code, 0, VM_INST_MAX*sizeof(ins));
     memset(code_buf, 0, VM_INST_MAX*sizeof(ins));
-    memset(block_pc_stack, 0, MAX_NEST_DEPTH*sizeof(int));
+    memset(block_pc_stack, 0, MAX_NEST_DEPTH*3*sizeof(int));
     memset(vm_stack, 0, 2*VM_STACK_MAX*sizeof(int));
     memset(vm_top, 0, 2*sizeof(int));
 
@@ -56,6 +56,7 @@ void vm_init(){
     vm_tail = 0;
 }
 
+/* 清理当前函数使用的字符串，在函数返回时调用 */
 int vm_heap_clear(int front, int idx, int* tail){
     int start = front;
     /* idx >= 0 说明返回值是字符串类型 */
@@ -79,6 +80,7 @@ void vm_set_jmp(int p, int addr, bool isbuf){
     else code[p].op2 = addr - p;
 }
 
+/* 生成一条指令 */
 void vm_gen(enum fct ins, int op1, int op2, char* s, int lval1, int lval2){
     code_buf[vm_buf_pc].f = ins;
     code_buf[vm_buf_pc].op1 = op1;
@@ -89,9 +91,7 @@ void vm_gen(enum fct ins, int op1, int op2, char* s, int lval1, int lval2){
     vm_buf_pc++;
 }
 
-// void vm_load_ins(FILE* inf); /* 将指令文件载入虚拟机中 */
-// void vm_save_ins(FILE* outf); /* 将虚拟机中的指令保存到文件中 */
-
+/* 交换两个block的顺序 */
 void vm_swap_block(){
     if(block_pc_top < 2) return;
     int p1 = block_pc_stack[block_pc_top - 2];
@@ -110,13 +110,14 @@ void vm_swap_block(){
     free(tmp);
 }
 
+/* 记录code_buf的尾指针位置 */
 int vm_record(bool push){
     if(push){
         block_pc_stack[block_pc_top++] = vm_buf_pc;
     }
     return vm_buf_pc;
 }
-
+/* 将一个block从code_buf输出到code */
 void vm_output(){
     for(int i = block_pc_stack[block_pc_top-1]; i < vm_buf_pc; i++){
         code[vm_code_cnt++] = code_buf[i];
@@ -277,7 +278,6 @@ void vm_step(FILE* inf, FILE* outf){
             break;
         }
         case cal:{
-            // cur_stack[(*cur_top)++] = vm_tail;
             cur_stack[(*cur_top)++] = vm_pc + 1;
             cur_stack[(*cur_top)++] = vm_base;
             cur_stack[(*cur_top)++] = get_base(i->op1);
@@ -287,7 +287,6 @@ void vm_step(FILE* inf, FILE* outf){
             int* p1 = &vm_top[0], *p2 = &vm_top[1];
             // printf("cal_debug:");
             while(*p2 > 0){
-                /* 除了参数，还要弹出vm_tail */
                 s1[(*p1)++] = s2[--(*p2)];
                 // printf("%d---", s1[*(p1)-1]);
             }
@@ -398,6 +397,7 @@ void vm_step(FILE* inf, FILE* outf){
                 case opor:
                     cur_stack[(*cur_top)++] = a2 || a1;
                     break;
+                /* 字符串拼接 */
                 case opscat:{
                     object *o1 = vm_heap[a2], *o2 = vm_heap[a1], *obj = (object*)malloc(sizeof(object));
                     obj->str_len = o1->str_len + o2->str_len;
@@ -410,6 +410,7 @@ void vm_step(FILE* inf, FILE* outf){
                     cur_stack[(*cur_top)++] = vm_tail++;
                     break;
                 }
+                /* 字符串相等与不相等判断 */
                 case opseq:{
                     object *o1 = vm_heap[a2], *o2 = vm_heap[a1];
                     bool ret = strcmp(o1->str_data, o2->str_data) == 0;
@@ -422,6 +423,7 @@ void vm_step(FILE* inf, FILE* outf){
                     cur_stack[(*cur_top)++] = ret;
                     break;
                 }   
+                /* 字符串幂 */
                 case opspow:{
                     object *o1 = vm_heap[a2], *obj = (object*)malloc(sizeof(object));
                     obj->str_len = o1->str_len * a1;
@@ -484,7 +486,7 @@ void vm_step(FILE* inf, FILE* outf){
                     break;
                 }
                 case lint:{
-                    obj->str_data = (char*) malloc(20+1);
+                    obj->str_data = (char*) malloc(MAX_STR_LEN);
                     sprintf(obj->str_data, "%d", cur_stack[(*cur_top) - 1]);
                     obj->str_len = strlen(obj->str_data);
 

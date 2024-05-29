@@ -62,9 +62,9 @@ int type_equal(type_desp* t1, type_desp* t2){
     if(t1->t != t2->t) return 0;
     
     if(t1->t == pointer){
-        int a = t1->member_t->t == t2->member_t->t;
-        int b = t1->dim == t2->dim;
-        return a != 0 && b != 0;
+        bool a = t1->member_t->t == t2->member_t->t;
+        bool b = t1->dim == t2->dim;
+        return a && b;
     }
     else if(t1->t == array){
         return type_equal(t1->member_t, t2->member_t);
@@ -110,13 +110,13 @@ void table_enter(type_desp* type, char* ident, int level, int size, int* tbl_tai
     strcpy(table[new_tbl_tail].name, ident);
     *tbl_tail = new_tbl_tail;
 
-    printf("enter: %s\n", ident);
+    // printf("enter: %s\n", ident);
     return;
 }
 
 /* 在符号表中查找标识符 */
 int table_position(char *id, int tbl_tail){
-    printf("try to find %s from %d\n", id, tbl_tail);
+    // printf("try to find %s from %d\n", id, tbl_tail);
     int i = tbl_tail;
     while(i >= 0){
         if(strcmp(id, table[i].name) == 0){
