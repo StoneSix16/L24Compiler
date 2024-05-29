@@ -1,4 +1,5 @@
 makefile
+parser.output
 GUI.py
 L24Parser.exe
 fcode.txt

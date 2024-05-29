@@ -289,13 +289,22 @@ decl_stmt: type_spec declarator
             type_decl->member_t = $1;
         }
         /* 检查是否有已被声明的不同类型的同标识符 */
-        if(tbl_idx != -1 && !type_equal(table[tbl_idx].type, type_decl)){
-            yyerror("a declared variable");
+        bool renew_table = true;
+        if(tbl_idx != -1){
+            /* 如果重名标识符都是当前层函数参数，则报错 */
+            /* 否则，如果重名标识符在同一层，不做处理 */
+            /* 否则，如果重名标识符不在同一层，将其插入符号表 */
+            bool flag1 = cur_level == table[tbl_idx].level;
+            bool flag2 = table[tbl_idx].proc_info && table[tbl_idx].proc_info->is_param && !push_flag;
+            if(flag1 && flag2){
+                yyerror("a declared variable");
+            }
+            else if(!flag1){
+                renew_table = false;
+            }
         }
-        else if(push_flag && tbl_idx != -1 && table[tbl_idx].proc_info && table[tbl_idx].proc_info->is_param){
-            yyerror("a declared variable");
-        }
-        else{
+
+        if(renew_table){
             int size = get_type_size(type_decl);
             if(push_flag){
                 vm_gen(push, 0, size);
@@ -510,13 +519,9 @@ condition: expr
     ;
 if_stmt: if_part_ifthen ENDSYM
     | if_part_ifthen 
-    {
-        $<number>$ = vm_record(false);
-        vm_gen(jmp, 0, 0);
-    }
     if_part_else 
     {
-        vm_set_jmp($<number>2, vm_record(false));
+        vm_set_jmp($<number>1, vm_record(false));
     }
     ENDSYM;
 
@@ -527,8 +532,11 @@ if_part_ifthen: IFSYM LPAREN condition RPAREN THENSYM
     }
     LBRACE stmt_list RBRACE 
     {
-        /* 还有一条jmp指令 */ 
-        vm_set_jmp($<number>6, vm_record(false) + 1);
+        /* 如果有else，则还需要多跳转一条指令，为此，需要在
+        解析else时重新修改jmp的跳转位置 */ 
+        $<number>$ = vm_record(false);
+        vm_gen(jmp, 0, 1);
+        vm_set_jmp($<number>6, vm_record(false));
     }
 if_part_else: ELSESYM LBRACE stmt_list RBRACE 
 
@@ -1202,8 +1210,8 @@ factor: LPAREN expr RPAREN
                 vm_gen(lit, 0, table[tbl_idx].addr);
                 vm_gen(addr, cur_level - table[tbl_idx].level, 0);
                 vm_gen(lod, -1, 0);
-                vm_gen(binop, opplus, 0, NULL, 1, $2->islval[0]);
-                vm_gen(addr, cur_level - table[tbl_idx].level, 0);
+                vm_gen(binop, opplus, 0, NULL, 0, $2->islval[0]);
+                // vm_gen(addr, cur_level - table[tbl_idx].level, 0);
 
                 type_desp* type_factor;
                 if(table[tbl_idx].type->dim == 1){
@@ -1466,22 +1474,26 @@ int main(int argc,char **argv) {
             printf("Can't open foutput.txt file!\n");
             exit(1);
         }
+        finfo = stdout;
+        foutput = stdout;
     }
 
     redirectInput(fsource, foutput);	
 	init();
 
-    fprintf(flog, "===compiling...===\n");
+    fprintf(flog, "\n===compiling...===\n");
     yyparse();
 
 	if(err == 0)
 	{
 		fprintf(flog, "\n===success!===\n");
+		fprintf(stdout, "\n===success!===\n");
         vm_print_code(fcode);
 	}
     else
 	{
 		fprintf(flog, "%d errors in PL/0 program\n", err);
+        fprintf(stdout, "%d errors in PL/0 program\n", err);
 	}
     fclose(flog);
     fclose(fcode);

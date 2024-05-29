@@ -228,8 +228,8 @@ void vm_step(FILE* inf, FILE* outf){
             break;
         }
         case scn:{
+            fprintf(outf,"\ninput:\n");
             if(i->op2 == lint){
-                printf("int scanf\n");
                 fscanf(inf, "%d", cur_stack+((*cur_top)++));
             }
             else if(i->op2 == lstring){
@@ -256,7 +256,7 @@ void vm_step(FILE* inf, FILE* outf){
             break;
         }
         case wrt:{
-            // printf("wrt_debug:%d\n", *cur_top);
+            // printf("wrt_debug:%d-%d\n", *cur_top, cur_stack[(*cur_top) - 1]);
             if(i->lval1 == 1){
                 cur_stack[(*cur_top) - 1] = vm_stack[0][cur_stack[(*cur_top) - 1]];
             }
@@ -320,6 +320,7 @@ void vm_step(FILE* inf, FILE* outf){
         }
         case push:{
             *cur_top += i->op2;
+            // fprintf(outf, "push_debug:%d\n", *cur_top);
             break;
         }
         case pop:{
@@ -367,6 +368,7 @@ void vm_step(FILE* inf, FILE* outf){
                     cur_stack[(*cur_top)++] = a2 * a1;
                     break;
                 case opslash:
+                    if(a1 == 0) fprintf(outf, "run time error: slash 0");
                     cur_stack[(*cur_top)++] = a2 / a1;
                     break;
                 case opmod:
@@ -386,6 +388,9 @@ void vm_step(FILE* inf, FILE* outf){
                     break;
                 case opgtr:
                     cur_stack[(*cur_top)++] = a2 > a1;
+                    break;
+                case opgeq:
+                    cur_stack[(*cur_top)++] = a2 >= a1;
                     break;
                 case opand:
                     cur_stack[(*cur_top)++] = a2 && a1;
