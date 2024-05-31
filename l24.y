@@ -1504,9 +1504,8 @@ int main(int argc,char **argv) {
                 }
                 if(vm_pc < vm_code_cnt) {
                     vm_step(finput, cache);
-                    fclose(cache);
                 }
-                else continue;
+                fclose(cache);
             }
             else if (cmd >= '0' && cmd <= '9'){
                 sprintf(cache_file, "./cache/%d.txt", cmd_cnt);
