@@ -139,11 +139,11 @@ void table_clear(int* tbl_tail, int level){
 void type_print(type_desp* type, FILE* ftable){
     if(type == NULL) return;
     if(type->t == pointer){
-        type_print(type->member_t);
+        type_print(type->member_t, ftable);
         for(int i = 0; i < type->dim; i++) fprintf(ftable, "*");
     }
     else if(type->t == array){
-        type_print(type->member_t);
+        type_print(type->member_t, ftable);
         for(int i = 0; i < type->dim; i++) fprintf(ftable, "[%d]", type->shape[i]);
     }
     else if(type->t == proc){

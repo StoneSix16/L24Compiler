@@ -1,16 +1,25 @@
 main{
-    int p(int a[3]){
-        int i;
-        for(i = 0; i < 3; i++){
-            print(a[i]++);
-        }
+    int num[2][3][3];
+    int i; i = 0;
+    int *p; p = num;
+    for(; i < 18; i++){
+        p[i] = i;
+        print(p[i], " ");
+    }
+    print("\n");
+
+    int P(int arr1[2][3][3]){
+        int PP(int arr2[3]){
+            print(arr2[0], " ", arr2[1], " ", arr2[2], " ");
+            print("\n");
+            return 0;
+        };
+        PP(arr1[0][1]);
+        num[1][2][2] = 24444;
         return 0;
     };
-    int s[10];
-    s[0] = 2; s[1] = 4; s[2] = 6;
-    int i, i = 0;
-    p(s);
-    for(i = 0; i < 3; i++){
-        print(s[i]);
+    P(num);
+    for(i=0 ; i < 18; i++){
+        print(p[i], " ");
     }
 }

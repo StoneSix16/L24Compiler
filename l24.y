@@ -10,20 +10,12 @@
 #include "vm.hpp"
 #include "lexer.hpp"
 
-// int tx;         /* 符号表当前尾指针 */
-// int cx;         /* 虚拟机代码指针, 取值范围[0, cxmax-1] */
-// int px;         /* 嵌套过程索引表proctable的指针 */
 int cur_level;        /* 层次记录 */
 int cur_block_pc; /* 存储当前函数体的起始位置 */
 int tbl_idx_proc[MAX_NEST_DEPTH];
 int num_ret[MAX_NEST_DEPTH];
 type_desp* type_ret[MAX_NEST_DEPTH];
 bool push_flag; /* 是否在声明变量时申请栈空间 */
-// int proctable[3];   /* 嵌套过程索引表，最多嵌套三层 */
-// char id[al];
-// int num;
-// bool listswitch;   /* 显示虚拟机代码与否 */
-// bool tableswitch;  /* 显示符号表与否 */
 
 FILE* fsource;      /* 输入源文件 */
 FILE* flog = NULL;	  /* 编译日志输出 */
@@ -33,9 +25,7 @@ FILE* fcode = NULL;    /* 输出虚拟机代码 */
 FILE* finfo = NULL;     /* 堆栈信息 */
 
 int err;
-extern int last_char;
 extern int line; 
-extern int err_line;
 bool err_args(int proc_tbl_idx, args_s* args, const char* add = NULL);
 bool err_ident(int tbl_idx, const char* add = NULL);
 bool err_lval(int islval, const char* add = NULL);
@@ -43,22 +33,13 @@ bool err_type(type_desp* expr_type, int t, bool eq = true, const char* add = NUL
 bool err_dim(int expr_dim, int decl_dim, const char* add = NULL);
 void yyerror(const char *msg);
 
-expr_s* gen_cmp_code(int op, expr_s* s1, expr_s* s3);
 /*
 用于二元逻辑运算的语义计算
 生成一条二元逻辑运算的虚拟机代码
 返回一个类型为lbool的expr_s
 */
+expr_s* gen_cmp_code(int op, expr_s* s1, expr_s* s3);
 
-// void init();
-// void enter(enum object k);
-// int position(char *s);
-// void setdx(int n);
-// void gen(enum fct x, int y, int z);
-// void listall();
-// void displaytable();
-// void interpret();
-// int base(int l, int* s, int b);
 %}
 
 ////////////////////////////////////////////////////////
@@ -67,7 +48,6 @@ expr_s* gen_cmp_code(int op, expr_s* s1, expr_s* s3);
 %define parse.error verbose
 %union{
 char *ident;
-// int var_size;
 int type_name;
 int number;
 
@@ -101,7 +81,6 @@ args_s* arg_inf;
 %type <expr_inf> condition expr and_expr cmp_expr add_expr multi_expr unary_expr post_expr pre_expr term factor
 %type <arg_inf> arg_list scan_list param_list
 %type <arr_idx_inf> arr_idx
-/* %type <var_size> stmt_list */
 %start program
 
 ////////////////////////////////////////////////////////
@@ -155,9 +134,7 @@ stmt: decl_stmt SEMICOLON
     | SEMICOLON
     ;
 
-/* 过程
-   过程的返回值类型放在参数列表类型的最后一位，过程只能返回右值
- */
+/* 过程 */
 proc: LPAREN load_params param_list load_params RPAREN
     {
         int tbl_idx = tbl_idx_proc[cur_level - 1];
@@ -194,6 +171,7 @@ proc: LPAREN load_params param_list load_params RPAREN
         }
     }
     ;
+/* 返回值语句 */
 ret_stmt: RETSYM expr 
     {
         if($2){
@@ -202,6 +180,7 @@ ret_stmt: RETSYM expr
                 yyerror("different ret type");
             }
             else{
+                /* 返回的必须为值类型 */
                 if($2->islval == 1){
                     vm_gen(lod, -1, 0);
                 }
@@ -214,19 +193,6 @@ ret_stmt: RETSYM expr
         }
     }
     ;
-end_block:  
-    {
-        /* 存储当前函数体的起始位置 */
-        cur_block_pc = vm_code_cnt;
-        table_print(flog);
-        /* 清空缓存的变量地址偏移 */
-        tbl_id_addr[cur_level] = INI_PUSH_SIZE;
-        /* 清空不需要再使用的符号表项 */
-        table_clear(&tbl_tail, cur_level);
-
-        /* 将code buffer中的一个block的内容输出到code中 */
-        vm_output();
-    };
 
 /* 类型限定符 */
 type_spec: type
@@ -263,7 +229,7 @@ type: STRSYM
     }
     ;
 
-/* 声明 */
+/* 声明主体 */
 declarator: ID
     {
         strcpy(tbl_id, $1);
@@ -275,7 +241,10 @@ declarator: ID
         $$ = $2;
     }
     ;
-decl_stmt: type_spec declarator
+/* 声明语句，包括变量与函数声明 */
+decl_stmt: 
+    /* 变量声明 */
+    type_spec declarator
     {
         int tbl_idx = table_position(tbl_id, tbl_tail);
         type_desp* type_decl;
@@ -292,45 +261,46 @@ decl_stmt: type_spec declarator
         bool renew_table = true;
         if(tbl_idx != -1){
             /* 如果重名标识符都是当前层函数参数，则报错 */
-            /* 否则，如果重名标识符在同一层，不做处理 */
+            /* 否则，如果重名标识符在同一层且类型相同，不做处理 */
             /* 否则，如果重名标识符不在同一层，将其插入符号表 */
             bool flag1 = cur_level == table[tbl_idx].level;
             bool flag2 = table[tbl_idx].proc_info && table[tbl_idx].proc_info->is_param && !push_flag;
-            if(flag1 && flag2){
+            bool flag3 = !type_equal(table[tbl_idx].type, $1);
+            if((flag1 && flag2) || (flag1 && flag3)){
                 yyerror("a declared variable");
             }
-            else if(!flag1){
+            else if(flag1){
                 renew_table = false;
             }
         }
 
         if(renew_table){
             int size = get_type_size(type_decl);
+            /* 如果是形参声明，则不需要生成push指令，且形参的size固定为1（数组会被转换成为指针） */
             if(push_flag){
                 vm_gen(push, 0, size);
                 table_enter(type_decl, tbl_id, cur_level, size, &tbl_tail);
-                // proc_desp* proc_info = create_proc_desp(NULL, NULL, true);
-                // table[tbl_tail].proc_info = proc_info;
             }
             else{
                 table_enter(type_decl, tbl_id, cur_level, 1, &tbl_tail);
             }
-            $$ = type_decl->t;
         }
+        $$ = type_decl->t;
     }
-    | type_spec declarator 
+    |
+    /* 函数声明 */ 
+    type_spec declarator 
     {
         if($2 != NULL){
             /* 函数的返回值类型不应该是数组 */
             yyerror("unable to ret an array");
         }
-        else{
-            /* 在符号表注册，size待填，params待填, addr待填*/
-            type_desp* type_decl = create_type_desp(proc, -1, -1);
-            type_decl->member_t = $1;
-            table_enter(type_decl, tbl_id, cur_level, 0, &tbl_tail);
-            tbl_idx_proc[cur_level] = tbl_tail;
-        }
+        /* 在符号表注册，size待填，params待填, addr待填*/
+        type_desp* type_decl = create_type_desp(proc, -1, -1);
+        /* proc类型的子类型为返回值类型 */
+        type_decl->member_t = $1;
+        table_enter(type_decl, tbl_id, cur_level, 0, &tbl_tail);
+        tbl_idx_proc[cur_level] = tbl_tail;
     }
     {
         /* 函数跳转入口 */
@@ -343,15 +313,24 @@ decl_stmt: type_spec declarator
         /* 记录定义函数的返回值类型 */
         type_ret[cur_level] = $1;
     }
-    proc end_block
+    proc
     {
+        /* 存储当前函数体的起始位置 */
+        $<number>$ = vm_code_cnt;
+        table_print(flog);
+        /* 清空缓存的变量地址偏移 */
+        tbl_id_addr[cur_level] = INI_PUSH_SIZE;
+        /* 清空不需要再使用的符号表项 */
+        table_clear(&tbl_tail, cur_level);
+        /* 将code buffer中的一个block的内容输出到code中 */
+        vm_output();
         /* 记录定义函数的返回值类型 */
         type_ret[cur_level] = NULL;
         num_ret[cur_level] = 0;
         cur_level --;
     }
     {
-        vm_set_jmp($<number>4, cur_block_pc, false);
+        vm_set_jmp($<number>4, $<number>6, false);
         $$ = proc;
     }
     ; 
@@ -359,7 +338,6 @@ decl_stmt: type_spec declarator
 /* 参数列表与数组维度 */
 arr_dim: LBRACKET LIT RBRACKET
     {
-
         if ($2->t != lint){
             yyerror("dimension is a non-integer");
         }
@@ -532,8 +510,7 @@ if_part_ifthen: IFSYM LPAREN condition RPAREN THENSYM
     }
     LBRACE stmt_list RBRACE 
     {
-        /* 如果有else，则还需要多跳转一条指令，为此，需要在
-        解析else时重新修改jmp的跳转位置 */ 
+        /* 如果有else，则需要修改then部分结束时的跳转地址 */ 
         $<number>$ = vm_record(false);
         vm_gen(jmp, 0, 1);
         vm_set_jmp($<number>6, vm_record(false));
@@ -937,7 +914,7 @@ unary_expr: pre_expr
     | NOT unary_expr
     {
         if($2){
-            bool flag1 = err_type($2->type_info, lbool, true, "not a non-bool");
+            bool flag1 = err_type($2->type_info, lbool, true, "not on a non-bool");
             if(flag1){
                 vm_gen(unaop, opnot, 0, NULL, $2->islval, 0);
                 $$ = $2;
@@ -958,7 +935,7 @@ pre_expr: post_expr
     | INC post_expr
     {
         if($2){
-            bool flag1 = err_type($2->type_info, lint, true, "inc a non-integer");
+            bool flag1 = err_type($2->type_info, lint, true, "inc on a non-integer");
             bool flag2 = err_lval($2->islval);
             if(flag1 && flag2){
                 vm_gen(unaop, opinc, 0, NULL, 1, 0);
@@ -973,7 +950,7 @@ pre_expr: post_expr
     | DEC post_expr
     {
         if($2){
-            bool flag1 = err_type($2->type_info, lint, true, "dec a non-integer");
+            bool flag1 = err_type($2->type_info, lint, true, "dec on a non-integer");
             bool flag2 = err_lval($2->islval);
             if(flag1 && flag2){
                 vm_gen(unaop, opdec, 0, NULL, 1, 0);
@@ -1027,12 +1004,12 @@ post_expr: term
     | post_expr INC
     {
         if($1){
-            bool flag1 = err_type($1->type_info, lint, true, "inc a non-integer");
+            bool flag1 = err_type($1->type_info, lint, true, "inc on a non-integer");
             bool flag2 = err_lval($1->islval);
             if(flag1 && flag2){
                 vm_gen(unaop, opinc, 0, NULL, 1, 0);
                 vm_gen(lit, 0, 1);
-                vm_gen(binop, opminus, 0, NULL, 0, 1);/* 执行二元操作时，压入栈的永远是右值 */
+                vm_gen(binop, opminus, 0, NULL, 0, 1);
                 $$ = $1;
                 $$->tbl_idx = -1;
                 $$->islval = 0;
@@ -1045,7 +1022,7 @@ post_expr: term
     | post_expr DEC
     {
         if($1){
-            bool flag1 = err_type($1->type_info, lint, true, "dec a non-integer");
+            bool flag1 = err_type($1->type_info, lint, true, "dec on a non-integer");
             bool flag2 = err_lval($1->islval);
             if(flag1 && flag2){
                 vm_gen(unaop, opdec, 0, NULL, 1, 0);
@@ -1077,7 +1054,7 @@ term: factor
                 type_desp* type_term = create_type_desp(pointer, -1, 1);
 
                 /* 对数组取地址：获取数组首元素的地址 */
-                if($$->type_info->t == array){
+                if($$->type_info->t == array){ /* should not execute */
                     type_term->member_t = $$->type_info->member_t;
                     free($$->type_info);
                     $$->type_info = type_term;
@@ -1110,9 +1087,7 @@ term: factor
                 vm_gen(lod, -1, 0);
             }
 
-            /* 
-                对指针执行一层解引用
-            */
+            /* 对指针执行一层解引用 */
             if(err_type($2->type_info, pointer, true, "derefer a non-pointer")){
                 type_desp* type_term;
                 $$ = $2;
@@ -1175,10 +1150,11 @@ factor: LPAREN expr RPAREN
                     vm_gen(lod, -1, 0);
                 }
 
-                for(int i = 1; i < $2->dim; i++){
-                    vm_gen(lit, 0, var_type_info->shape[i]);
-                    vm_gen(binop, optimes, 0, NULL, 0, $2->islval[i-1]);
-                    vm_gen(binop, opplus, 0, NULL, 0, $2->islval[i]);
+                for(int i = 0; i < $2->dim; i++){
+                    int tmp = (var_type_info->dim > i+1) ? var_type_info->shape[i+1]:1;
+                    vm_gen(lit, 0, tmp);
+                    vm_gen(binop, optimes, 0, NULL, 0, $2->islval[i]);
+                    if($2->dim > i+1) vm_gen(binop, opplus, 0, NULL, 0, $2->islval[i+1]);
                 }
                 vm_gen(mov, opmi, 1);
 
@@ -1212,7 +1188,6 @@ factor: LPAREN expr RPAREN
                 vm_gen(lod, -1, 0);
                 vm_gen(binop, opplus, 0, NULL, 0, $2->islval[0]);
                 // vm_gen(addr, cur_level - table[tbl_idx].level, 0);
-
                 type_desp* type_factor;
                 if(table[tbl_idx].type->dim == 1){
                     type_factor = type_copy(table[tbl_idx].type->member_t);
@@ -1246,15 +1221,15 @@ factor: LPAREN expr RPAREN
             bool flag2 = flag1 && err_args(tbl_idx, $4);
             if(flag2){
             
-            /* 参数被压入辅助栈 */
-            vm_gen(mov, opmo, table[tbl_idx].size + 1);
+                /* 参数被压入辅助栈 */
+                vm_gen(mov, opmo, table[tbl_idx].size + 1);
 
-            /* cal指令计算RA，DL，SL，压入辅助栈后将所有元素弹回主栈 */
-            vm_gen(cal, cur_level - table[tbl_idx].level, table[tbl_idx].addr);
+                /* cal指令计算RA，DL，SL，压入辅助栈后将所有元素弹回主栈 */
+                vm_gen(cal, cur_level - table[tbl_idx].level, table[tbl_idx].addr);
 
-            /* 语义计算结果为返回值类型，右值 */
-            type_desp* type_factor = type_copy(table[tbl_idx].proc_info->ret_type);
-            $$ = create_expr_s(type_factor, -1);
+                /* 语义计算结果为返回值类型，右值 */
+                type_desp* type_factor = type_copy(table[tbl_idx].proc_info->ret_type);
+                $$ = create_expr_s(type_factor, -1);
             }
         }
         else{
@@ -1335,8 +1310,7 @@ expr_s* gen_cmp_code(int op, expr_s* s1, expr_s* s3){
 
 void yyerror(const char *msg) {
 	err = err + 1;
-    fprintf(flog, "\nError: %s in line %d\n", msg, err_line);
-    err_line = line;
+    fprintf(flog, "\nError: %s in line %d\n", msg, line);
 	return;
 }
 
@@ -1448,7 +1422,6 @@ int main(int argc,char **argv) {
         printf("Can't open flog.txt file!\n");
         exit(1);
     }
-
     if ((fcode = fopen("fcode.txt", "w")) == NULL){
         printf("Can't open fcode.txt file!\n");
         exit(1);
@@ -1458,6 +1431,7 @@ int main(int argc,char **argv) {
 		exit(1);
 	}
 
+    /* 使用-g（gui）时，输入流被指定为文件，否则输入流为标准输入 */
     if(argc > 2 && strcmp(argv[2], "-g") == 0){
         if ((finput = fopen("finput.txt", "r")) == NULL){
             printf("Can't open finput.txt file!\n");
@@ -1468,10 +1442,6 @@ int main(int argc,char **argv) {
         finput = stdin;
         if ((finfo = fopen("finfo.txt", "w")) == NULL){
             printf("Can't open finfo.txt file!\n");
-            exit(1);
-        }
-        if ((foutput = fopen("foutput.txt", "w")) == NULL){
-            printf("Can't open foutput.txt file!\n");
             exit(1);
         }
         finfo = stdout;
@@ -1501,10 +1471,12 @@ int main(int argc,char **argv) {
 
     int cmd;
     if(argc > 2 && strcmp(argv[2], "-g") == 0){
+        /* 使用-g参数，每条指令的输出会保存在cache目录下一个有唯一标识文件中，从而保证gui在指令执行结果输出完毕后再读取 */
         int cmd_cnt = 0;
         char cache_file[50];
         FILE* cache;
 
+        /* 标识编译过程结束，gui可以读取编译日志和指令代码 */
         sprintf(cache_file, "./cache/%d.txt", cmd_cnt);
         if((cache = fopen(cache_file, "w")) == NULL){
             printf("Can't open cache file!\n");
@@ -1566,8 +1538,6 @@ int main(int argc,char **argv) {
         fclose(foutput);
         fclose(finfo);
     }
-
-
 	
     return 0;
 }

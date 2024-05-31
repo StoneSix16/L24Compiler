@@ -262,19 +262,21 @@ void vm_step(FILE* inf, FILE* outf){
                 cur_stack[(*cur_top) - 1] = vm_stack[0][cur_stack[(*cur_top) - 1]];
             }
             if(i->op2 == lint){
-                fprintf(outf, "%d ", cur_stack[--(*cur_top)]);
+                fprintf(outf, "%d", cur_stack[--(*cur_top)]);
             }
             else if(i->op2 == lbool){
-                fprintf(outf, "%s ", cur_stack[--(*cur_top)]? "true":"false");
+                fprintf(outf, "%s", cur_stack[--(*cur_top)]? "true":"false");
             }
             else if(i->op2 == lstring){
                 int p = cur_stack[--(*cur_top)];
-                fprintf(outf, "%s ", vm_heap[p]->str_data);
+                fprintf(outf, "%s", vm_heap[p]->str_data);
             }
             else if(i->op2 == pointer){
-                fprintf(outf, "%d ", cur_stack[--(*cur_top)]);
+                fprintf(outf, "%d", cur_stack[--(*cur_top)]);
             }
-            else{}
+            else{
+                fprintf(outf, "try to print unsupport type\n");
+            }
             break;
         }
         case cal:{
@@ -293,7 +295,7 @@ void vm_step(FILE* inf, FILE* outf){
             // printf("\n");
             p_stk = 0;
 
-            vm_pc = i->op2;
+            vm_pc = i->op2 - 1;
             
             break;
         }
