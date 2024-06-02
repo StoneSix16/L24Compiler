@@ -1146,16 +1146,28 @@ factor: LPAREN expr RPAREN
             if(flag_arr && err_dim($2->dim, var_type_info->dim)){
                 /* 索引计算 */
                 vm_gen(mov, opmo, $2->dim);
-                if($2->dim == 1 && $2->islval[0]){
-                    vm_gen(lod, -1, 0);
+                vm_gen(lit, 0, 0);
+                for(int i = 0; i < $2->dim; i++){
+                    vm_gen(binop, opplus, 0, NULL, 0, $2->islval[i]);
+                    if(var_type_info->dim > i+1) {
+                        vm_gen(lit, 0, var_type_info->shape[i+1]);
+                        vm_gen(binop, optimes, 0, NULL, 0, 0);
+                    }
                 }
 
-                for(int i = 0; i < $2->dim; i++){
-                    int tmp = (var_type_info->dim > i+1) ? var_type_info->shape[i+1]:1;
-                    vm_gen(lit, 0, tmp);
-                    vm_gen(binop, optimes, 0, NULL, 0, $2->islval[i]);
-                    if($2->dim > i+1) vm_gen(binop, opplus, 0, NULL, 0, $2->islval[i+1]);
-                }
+                // if($2->dim == 1 && $2->islval[0]){
+                //     vm_gen(lod, -1, 0);
+                // }
+
+                // for(int i = 0; i < $2->dim; i++){
+                //     int tmp = (var_type_info->dim > i+1) ? var_type_info->shape[i+1]:1;
+                //     vm_gen(lit, 0, tmp);
+                //     vm_gen(binop, optimes, 0, NULL, 0, $2->islval[i]);
+                //     if($2->dim > i+1) {
+                //         vm_gen(binop, opplus, 0, NULL, 0, $2->islval[i+1]);
+                //         $2->islval[i+1] = 0;
+                //     }
+                // }
                 vm_gen(mov, opmi, 1);
 
                 vm_gen(lit, 0, table[tbl_idx].addr);
