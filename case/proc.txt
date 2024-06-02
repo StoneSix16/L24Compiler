@@ -1,10 +1,21 @@
 main{
-    int a; a = 0;
-    int ex; ex = 3;
-    string f(int a){
-        string s;
-        s = a+"H";
-        return s*ex;
+    int cnt; cnt = 0;
+    int output(int x){
+        print("output: ", x, "\n");
+        cnt ++;
+        return 0;
     };
-    print(f(1));
+    int foo(int val){
+        int post(){
+            output (val);
+            return 0;
+        };
+        print("call foo \n");
+        post();
+        return 0;
+    };
+print(cnt, "\n");
+foo(114);
+foo(233);
+print(cnt, "\n");
 }

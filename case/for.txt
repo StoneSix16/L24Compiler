@@ -1,7 +1,15 @@
 main{
-    int i; int ret; ret = 0;
-    for(i = 0; i < 2; ++i){
-        ret = ret + i;
+    int mat[3][3];
+    int i; int j;
+    for(i = 0; i < 3; ++i){
+        for(j = 0; j < 3; ++j){
+            mat[i][j] = i+j;
+        }
     }
-    print(ret);
+    for(i = 0; i < 3; ++i){
+        for(j = 0; j < 3; ++j){
+            print(mat[i][j]);
+        }
+        print("\n");
+    }
 }

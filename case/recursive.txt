@@ -7,5 +7,6 @@ main{
         if(y%2 == 1) then {ret = ret*x;} end;
         return ret;
     }; 
-    print(pow(3,64));
+    int x; int y; scan(x, y);
+    print(pow(x, y));
 }

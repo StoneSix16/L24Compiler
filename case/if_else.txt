@@ -1,12 +1,11 @@
 main{
-    string a;
-    a = "hhhh";
-    if(a+1 == "hhhh1")then{
-        if(a * 2 == "hhhhhhhh")then{
-            print(a*3);
+    int x; scan(x);
+    if(x%3 == 0)then{
+        if(x%5 == 0)then{
+            print(x, " |3|5");
         }end;
     }
     else{
-        print(a);
+        print(x, " |3");
     }end;
 }

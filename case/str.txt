@@ -1,7 +1,7 @@
 main{
-    string s1
+    string s1;
     s1 = "\"OKOK\"";
-    print(s1);
-    print(s1+4);
+    print("Not" + s1, "\n");
+    print(s1+4333, "\n");
     print(s1*4);
 }
